@@ -1,0 +1,32 @@
+{
+  "name": "garments-export-invoice",
+  "version": "1.0.0",
+  "description": "Garments & Commercial Export Invoicing & Data Management System with Supabase, PDF/XLSX generation & Chrome Autofill Extension",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "keywords": [
+    "garments",
+    "export-invoice",
+    "commercial-invoice",
+    "packing-list",
+    "supabase",
+    "postgresql",
+    "autofill-extension"
+  ],
+  "author": "Fayzar Software Systems",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

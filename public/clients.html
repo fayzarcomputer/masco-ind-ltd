@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buyers & Clients Directory - MASCO INDUSTRIES LIMITED</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div style="background: #fff; padding: 4px; border-radius: 4px; display: flex; align-items: center;">
+        <img src="assets/masco-logo.svg" alt="Masco" style="width: 28px; height: 28px;">
+      </div>
+      <div>
+        <div class="brand-title">MASCO INDUSTRIES LIMITED</div>
+        <span class="brand-subtitle">Commercial Export Invoicing & Management System</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="invoice-entry.html" class="nav-link">New Invoice Entry</a>
+      <a href="clients.html" class="nav-link active">Buyers & Clients</a>
+      <a href="extension-info.html" class="nav-link">Autofill Extension</a>
+      <a href="invoice-entry.html" class="nav-btn">+ Create Export Invoice</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 1.5rem; color: var(--dark);">Buyers & Importers Directory</h1>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Manage international buyer records, issuing banks, and consignee profiles</p>
+      </div>
+      <button id="btnOpenAddModal" class="btn btn-primary">+ Add New Buyer</button>
+    </div>
+
+    <!-- Client Cards / Grid -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🏢 Registered Buyers / Consignees</div>
+        <input type="text" id="searchClients" placeholder="Search buyer or country..." class="form-control" style="width: 260px;">
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Buyer / Applicant Name</th>
+              <th>Destination Country</th>
+              <th>Office & Corporate Address</th>
+              <th>Notify Party</th>
+              <th>Buyer's Issuing Bank & SWIFT</th>
+              <th class="text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="clientsTableBody">
+            <tr><td colspan="6" class="text-center">Loading buyer profiles...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add Buyer Modal / Section -->
+    <div id="addClientSection" class="card" style="display: none; border-top: 4px solid var(--primary);">
+      <div class="card-header">
+        <div class="card-title">➕ Register New Buyer Profile</div>
+        <button type="button" id="btnCloseAddSection" class="btn btn-outline btn-sm">✕ Close</button>
+      </div>
+
+      <form id="addClientForm">
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label" for="newApplicantName">Buyer / Applicant Name <span class="required">*</span></label>
+            <input type="text" id="newApplicantName" class="form-control" placeholder="e.g. MALACCA SOURCING PTE. LTD.," required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newCountry">Destination Country <span class="required">*</span></label>
+            <input type="text" id="newCountry" class="form-control" placeholder="e.g. SINGAPORE" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newSwift">Bank SWIFT / BIC Code</label>
+            <input type="text" id="newSwift" class="form-control" placeholder="e.g. DBSSSGSG">
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label" for="newBankName">Buyer's Bank Name</label>
+            <input type="text" id="newBankName" class="form-control" placeholder="e.g. DBS Bank Limited">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newBankBranch">Bank Branch / Address</label>
+            <input type="text" id="newBankBranch" class="form-control" placeholder="e.g. 12 Marina Boulevard, Singapore 018982">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newAccountNo">Account / IBAN Number</label>
+            <input type="text" id="newAccountNo" class="form-control" placeholder="e.g. 0729034931">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="newAddress">Office / Corporate Address <span class="required">*</span></label>
+            <textarea id="newAddress" class="form-control" rows="2" placeholder="Full postal and corporate address" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="newNotifyParty">Notify Party Details</label>
+            <textarea id="newNotifyParty" class="form-control" rows="2" placeholder="Notify party address (if applicable)"></textarea>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+          <button type="button" id="btnCancelAdd" class="btn btn-outline">Cancel</button>
+          <button type="submit" class="btn btn-success">💾 Save Buyer Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    MASCO INDUSTRIES LIMITED &copy; 2026. Export ERP & Commercial Invoicing System.
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/clients.js"></script>
+</body>
+</html>

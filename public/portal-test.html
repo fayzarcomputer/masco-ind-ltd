@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulated External Portal - Bangladesh Customs & EXP Declaration</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; color: #333; }
+    .portal-box { max-width: 850px; margin: 20px auto; background: #fff; border: 1px solid #ccc; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 25px; }
+    .portal-header { border-bottom: 2px solid #004d40; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .portal-header h2 { margin: 0; color: #004d40; font-size: 20px; }
+    .badge { background: #e0f2f1; color: #004d40; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+    .info-banner { background: #fff8e1; border-left: 4px solid #ffb300; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; line-height: 1.4; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+    .form-field { display: flex; flex-direction: column; gap: 4px; }
+    label { font-size: 12px; font-weight: bold; color: #444; }
+    input, select, textarea { padding: 8px 10px; border: 1px solid #bbb; border-radius: 4px; font-size: 13px; }
+    input:focus { border-color: #004d40; outline: none; }
+    .btn-submit { background: #004d40; color: #fff; padding: 10px 24px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .btn-submit:hover { background: #00695c; }
+  </style>
+</head>
+<body>
+
+  <div class="portal-box">
+    <div class="portal-header">
+      <div>
+        <h2>NATIONAL EXPORT CLEARANCE & EXP REGISTRATION PORTAL</h2>
+        <small style="color: #666;">Third-Party / Government Portal Simulation for Autofill Testing</small>
+      </div>
+      <span class="badge">SIMULATED EXTERNAL SITE</span>
+    </div>
+
+    <div class="info-banner">
+      💡 <strong>Autofill Testing Instructions:</strong><br>
+      Open the <strong>Garments Export Portal Autofill</strong> Chrome extension popup, select or paste an Invoice ID (e.g. <code>MIL/MS/1205/2026</code>), and click <strong>"⚡ Autofill Active Webpage"</strong>. The fields below will be automatically populated!
+    </div>
+
+    <form onsubmit="event.preventDefault(); alert('External Form Submitted Successfully with Autofilled Data!');">
+      <div class="grid-2">
+        <div class="form-field">
+          <label for="exp_no">Bangladesh Bank EXP Registration No:</label>
+          <input type="text" id="exp_no" name="exp_number" placeholder="EXP/CTG/XXXX/XXXXX">
+        </div>
+        <div class="form-field">
+          <label for="invoice_no">Commercial Invoice Number:</label>
+          <input type="text" id="invoice_no" name="commercial_invoice_no" placeholder="MIL/MS/XXXX/XXXX">
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-field">
+          <label for="invoice_date">Date of Invoice:</label>
+          <input type="date" id="invoice_date" name="invoice_date">
+        </div>
+        <div class="form-field">
+          <label for="invoice_value">Total Export FOB Value (USD):</label>
+          <input type="text" id="invoice_value" name="total_amount" placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label for="currency">Currency Code:</label>
+          <input type="text" id="currency" name="currency" value="USD">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-field">
+          <label for="buyer_name">Foreign Buyer / Consignee Name:</label>
+          <input type="text" id="buyer_name" name="applicant_name" placeholder="Name of foreign buyer">
+        </div>
+        <div class="form-field">
+          <label for="destination">Destination Country:</label>
+          <input type="text" id="destination" name="destination_country" placeholder="e.g. Sweden, Spain, USA">
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-field">
+          <label for="total_pcs">Total Quantity in Pcs:</label>
+          <input type="text" id="total_pcs" name="total_qty" placeholder="0">
+        </div>
+        <div class="form-field">
+          <label for="total_carton">Total Packages / Cartons:</label>
+          <input type="text" id="total_carton" name="packages" placeholder="0">
+        </div>
+        <div class="form-field">
+          <label for="hs_code">Commodity HS Code:</label>
+          <input type="text" id="hs_code" name="tariff_code" placeholder="6109.10.00">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-field">
+          <label for="port_loading">Port of Loading:</label>
+          <input type="text" id="port_loading" name="pol" placeholder="Chattogram Port">
+        </div>
+        <div class="form-field">
+          <label for="port_discharge">Port of Discharge / Destination Port:</label>
+          <input type="text" id="port_discharge" name="pod" placeholder="Rotterdam, Hamburg, etc.">
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-field">
+          <label for="gross_wt">Total Gross Weight (KG):</label>
+          <input type="text" id="gross_wt" name="gross_weight" placeholder="0.00">
+        </div>
+        <div class="form-field">
+          <label for="net_wt">Total Net Weight (KG):</label>
+          <input type="text" id="net_wt" name="net_weight" placeholder="0.00">
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: right;">
+        <button type="submit" class="btn-submit">Submit Export Declaration</button>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>

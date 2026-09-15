@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Garments Export Portal Autofill",
+  "version": "1.0.0",
+  "description": "Autofill export declarations, EXP forms, and customs portals directly from FAYZAR Export Invoicing System",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Export Invoice Autofill"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commercial Export Invoice Entry - MASCO INDUSTRIES LIMITED</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div style="background: #fff; padding: 4px; border-radius: 4px; display: flex; align-items: center;">
+        <img src="assets/masco-logo.svg" alt="Masco" style="width: 28px; height: 28px;">
+      </div>
+      <div>
+        <div class="brand-title">MASCO INDUSTRIES LIMITED</div>
+        <span class="brand-subtitle">Commercial Export Invoicing & Management System</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="invoice-entry.html" class="nav-link active">New Invoice Entry</a>
+      <a href="clients.html" class="nav-link">Buyers & Clients</a>
+      <a href="extension-info.html" class="nav-link">Autofill Extension</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+      <div>
+        <h1 style="font-size: 1.5rem; color: var(--dark);">Commercial Export Invoice Entry</h1>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">
+          MASCO Official Export Documentation (Commercial Invoice & Packing List)
+        </p>
+      </div>
+      <a href="index.html" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+    </div>
+
+    <form id="invoiceForm">
+      
+      <!-- Section 1: Buyer / Consignee Selection (Auto-fill) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏢 1. Buyer / Applicant Information (Auto-fill)</div>
+          <a href="clients.html" class="btn btn-outline btn-sm" target="_blank">+ Add New Buyer</a>
+        </div>
+        
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label" for="clientSelect">Select Buyer / Applicant <span class="required">*</span></label>
+            <select id="clientSelect" class="form-control" required>
+              <option value="">-- Choose Buyer / Importer --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="clientCountry">Destination Country</label>
+            <input type="text" id="clientCountry" class="form-control" readonly placeholder="Auto-populated...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="buyerBankName">Buyer's Bank Name</label>
+            <input type="text" id="buyerBankName" class="form-control" placeholder="e.g. DBS Bank Limited">
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label" for="buyerBankAddress">Buyer Bank Address</label>
+            <input type="text" id="buyerBankAddress" class="form-control" placeholder="12 Marina Boulevard, Marina Bay...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="buyerBankSwift">Buyer Bank SWIFT Code</label>
+            <input type="text" id="buyerBankSwift" class="form-control" placeholder="DBSSSGSG">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="buyerBankAccount">Buyer USD Account No.</label>
+            <input type="text" id="buyerBankAccount" class="form-control" placeholder="0729034931">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="clientAddress">Buyer Office Address</label>
+            <textarea id="clientAddress" class="form-control" rows="2" placeholder="Auto-populated upon selecting buyer..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="clientNotify">Notify Party Details</label>
+            <textarea id="clientNotify" class="form-control" rows="2" placeholder="Notify party address (if different from consignee)..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Invoice Master & Shipping Declarations -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📑 2. Invoice Master & Export Declarations</div>
+        </div>
+
+        <div class="form-grid-4">
+          <div class="form-group">
+            <label class="form-label" for="invoiceNo">Invoice Number <span class="required">*</span></label>
+            <input type="text" id="invoiceNo" class="form-control" value="MIL/MS/1205/2026" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="invoiceDate">Invoice Date <span class="required">*</span></label>
+            <input type="date" id="invoiceDate" class="form-control" value="2026-09-12" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="expNo">EXP Form Number</label>
+            <input type="text" id="expNo" class="form-control" value="0216-023253-2026">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="expDate">EXP Date</label>
+            <input type="date" id="expDate" class="form-control" value="2026-09-12">
+          </div>
+        </div>
+
+        <div class="form-grid-4">
+          <div class="form-group">
+            <label class="form-label" for="scNo">S/C (Sales Contract) No.</label>
+            <input type="text" id="scNo" class="form-control" value="MS26/5002-SS27">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="scDate">S/C Date</label>
+            <input type="date" id="scDate" class="form-control" value="2026-04-10">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="portLoading">Port of Loading</label>
+            <input type="text" id="portLoading" class="form-control" value="CHITTAGONG, BANGLADESH">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modeShipment">Mode of Shipment</label>
+            <select id="modeShipment" class="form-control">
+              <option value="BY SEA" selected>BY SEA</option>
+              <option value="BY AIR">BY AIR</option>
+              <option value="BY ROAD">BY ROAD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-4">
+          <div class="form-group">
+            <label class="form-label" for="portDischarge">Port of Discharge & Delivery</label>
+            <input type="text" id="portDischarge" class="form-control" value="Khorgos-Almaty, Kazakistan">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="incoterm">Incoterm</label>
+            <input type="text" id="incoterm" class="form-control" value="FOB, CHITTAGONG">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="currency">Currency</label>
+            <select id="currency" class="form-control">
+              <option value="USD" selected>USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="countryOrigin">Country of Origin</label>
+            <input type="text" id="countryOrigin" class="form-control" value="BANGLADESH" readonly>
+          </div>
+        </div>
+
+        <!-- Masco Banking & Compliance Details -->
+        <div class="form-grid-4" style="border-top: 1px dashed var(--border); padding-top: 0.75rem; margin-top: 0.5rem;">
+          <div class="form-group">
+            <label class="form-label" for="shipperBank">Shipper Bank</label>
+            <input type="text" id="shipperBank" class="form-control" value="PUBALI BANK PLC." readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipperBranch">Bank Branch</label>
+            <input type="text" id="shipperBranch" class="form-control" value="MOHAKHALI CORPORATE BRANCH, 4, MOHAKHALI C/A, DHAKA-1212" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipperSwift">SWIFT Code</label>
+            <input type="text" id="shipperSwift" class="form-control" value="PUBABDDH216" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="shipperAccount">Account Number</label>
+            <input type="text" id="shipperAccount" class="form-control" value="3678901000862" readonly>
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label" for="eTin">E-TIN NO.</label>
+            <input type="text" id="eTin" class="form-control" value="860718316349" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="binNo">BIN NO.</label>
+            <input type="text" id="binNo" class="form-control" value="000188391-0102" readonly>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ercNo">ERC NO</label>
+            <input type="text" id="ercNo" class="form-control" value="260326210535120" readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Dynamic Item Grid / Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📦 3. Production Lines & Packing Details (Real-time Math)</div>
+          <button type="button" id="btnAddRow" class="btn btn-primary btn-sm">+ Add New Row</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="itemsTable">
+            <thead>
+              <tr>
+                <th style="width: 30px;">#</th>
+                <th style="width: 150px;">ORDER NO / PO</th>
+                <th style="width: 90px;">ITEM REF</th>
+                <th style="width: 90px;">HS CODE</th>
+                <th>PRODUCTION DESCRIPTION</th>
+                <th style="width: 90px;">COLOR</th>
+                <th style="width: 80px;" class="text-right">CARTON</th>
+                <th style="width: 85px;" class="text-right">QTY (PCS)</th>
+                <th style="width: 85px;" class="text-right">G.WT (KG)</th>
+                <th style="width: 85px;" class="text-right">N.WT (KG)</th>
+                <th style="width: 75px;" class="text-right">CBM</th>
+                <th style="width: 85px;" class="text-right">PRICE ($)</th>
+                <th style="width: 105px;" class="text-right">AMOUNT ($)</th>
+                <th style="width: 40px;" class="text-center">✕</th>
+              </tr>
+            </thead>
+            <tbody id="itemsTableBody">
+              <!-- Injected dynamically via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Real-time Bottom General Summary Box (Matching PDF Format) -->
+        <div class="totals-summary-bar">
+          <div class="summary-item">
+            <span class="summary-title">TOTAL QNTY</span>
+            <span class="summary-num" id="sumPcs">1,002 PCS</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-title">TOTAL CTNS</span>
+            <span class="summary-num" id="sumCartons">22 CTN</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-title">TOTAL GR.WT</span>
+            <span class="summary-num" id="sumGrossWt">225.90 KGS</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-title">TOTAL NT.WT</span>
+            <span class="summary-num" id="sumNetWt">196.77 KGS</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-title">TOTAL CBM</span>
+            <span class="summary-num" id="sumCBM">1.023 CBM</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-title">TOTAL VALUE</span>
+            <span class="summary-num highlight" id="sumAmount">$3,086.16</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem;">
+        <a href="index.html" class="btn btn-outline">Cancel</a>
+        <button type="submit" id="btnSubmitInvoice" class="btn btn-success" style="padding: 0.75rem 2.5rem; font-size: 1rem;">
+          💾 Save & Generate Commercial Invoice
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <footer class="footer">
+    MASCO INDUSTRIES LIMITED &copy; 2026. Export ERP & Commercial Invoicing System.
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/entry-form.js"></script>
+</body>
+</html>

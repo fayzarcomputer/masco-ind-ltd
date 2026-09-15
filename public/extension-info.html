@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chrome Autofill Extension Setup Guide - FAYZAR ERP</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon">📦</div>
+      <div>
+        <div class="brand-title">FAYZAR EXPORTS ERP</div>
+        <span class="brand-subtitle">Commercial Invoicing & Data Management</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="invoice-entry.html" class="nav-link">New Invoice Entry</a>
+      <a href="clients.html" class="nav-link">Buyers & Clients</a>
+      <a href="extension-info.html" class="nav-link active">Autofill Extension</a>
+      <a href="invoice-entry.html" class="nav-btn">+ Create Export Invoice</a>
+    </div>
+  </nav>
+
+  <div class="container" style="max-width: 960px;">
+    <div style="margin-bottom: 1.5rem;">
+      <h1 style="font-size: 1.6rem; color: var(--dark);">⚡ Portal Autofill Chrome Extension</h1>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Autofill commercial invoice and EXP data into government customs and foreign buyer portals automatically.
+      </p>
+    </div>
+
+    <!-- Alert / Summary -->
+    <div class="alert alert-info">
+      <strong>✨ Features:</strong> Connects to <code>GET /api/invoices/:id</code>, retrieves full invoice, buyer, and item details, and automatically matches input fields on external web portals without manual copy-pasting.
+    </div>
+
+    <!-- Step 1: Install Extension -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">1. How to Install Extension in Google Chrome</div>
+      </div>
+      <ol style="padding-left: 1.5rem; line-height: 1.8; font-size: 0.95rem;">
+        <li>Open Google Chrome and navigate to: <code>chrome://extensions</code></li>
+        <li>Enable <strong>Developer mode</strong> in the top-right corner toggle.</li>
+        <li>Click the <strong>"Load unpacked"</strong> button in the top-left.</li>
+        <li>Select the project folder path:
+          <br>
+          <code style="background: #e2e8f0; padding: 3px 8px; border-radius: 4px; font-weight: bold; color: #1e3a8a;">
+            .../garments-export-invoice/extension
+          </code>
+        </li>
+        <li>The <strong>"Garments Export Portal Autofill"</strong> icon will now appear in your Chrome toolbar!</li>
+      </ol>
+    </div>
+
+    <!-- Step 2: Test Extension -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">2. Test the Autofill Engine</div>
+        <a href="portal-test.html" target="_blank" class="btn btn-primary btn-sm">Open Simulated External Portal ↗</a>
+      </div>
+      <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-muted);">
+        We have included a simulated external portal that mimics the Bangladesh Bank EXP and Customs clearance declaration form.
+      </p>
+      <ol style="padding-left: 1.5rem; line-height: 1.8; font-size: 0.95rem;">
+        <li>Click the button above to open the <a href="portal-test.html" target="_blank" style="color: #1e3a8a; font-weight: bold;">Simulated Portal Page</a> in a new tab.</li>
+        <li>Click the <strong>FAYZAR Extension icon</strong> in Chrome.</li>
+        <li>Select or type an invoice number (e.g. <code>MIL/MS/1205/2026</code>).</li>
+        <li>Click <strong>"⚡ Autofill Active Webpage"</strong>.</li>
+        <li>Watch the fields (Invoice No, EXP No, Buyer Name, FOB Value, Cartons, Pcs, Weights, Port, etc.) populate and glow green!</li>
+      </ol>
+    </div>
+
+    <!-- API Architecture -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">3. API Endpoint Architecture</div>
+      </div>
+      <div style="font-size: 0.9rem; line-height: 1.6;">
+        <p>The extension communicates directly with the backend endpoint:</p>
+        <pre style="background: #0f172a; color: #38bdf8; padding: 1rem; border-radius: 6px; margin: 0.75rem 0; overflow-x: auto;">GET http://localhost:5000/api/invoices/:id</pre>
+        <p>Response JSON payload includes:</p>
+        <ul style="padding-left: 1.5rem; margin-top: 0.5rem;">
+          <li><strong>Master Details:</strong> <code>invoice_no</code>, <code>invoice_date</code>, <code>exp_no</code>, <code>exp_date</code>, <code>total_amount</code>, <code>currency</code></li>
+          <li><strong>Buyer Data:</strong> <code>applicant_name</code>, <code>office_address</code>, <code>country</code>, <code>notify_party</code>, <code>bank_name</code></li>
+          <li><strong>Logistics:</strong> <code>total_carton</code>, <code>total_pcs</code>, <code>total_gross_weight</code>, <code>total_cbm</code>, <code>port_of_loading</code>, <code>port_of_discharge</code></li>
+          <li><strong>Item Details:</strong> <code>po_number</code>, <code>style</code>, <code>hs_code</code>, <code>line_total</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Garments & Commercial Export Invoicing System &copy; 2026.
+  </footer>
+
+</body>
+</html>

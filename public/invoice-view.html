@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export Document Viewer - Commercial Invoice & Packing List</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/print.css">
+</head>
+<body style="background: #e2e8f0;">
+
+  <!-- Main Document Preview Wrapper -->
+  <div class="document-preview-wrapper">
+    
+    <!-- Top Action Toolbar (Hidden in Print) -->
+    <div class="controls-bar no-print">
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <a href="index.html" class="btn btn-outline btn-sm">← Invoices List</a>
+        
+        <!-- View Switcher -->
+        <div style="background: #f1f5f9; padding: 3px; border-radius: 6px; display: inline-flex;">
+          <button id="btnViewCI" class="btn btn-primary btn-sm">📄 Commercial Invoice</button>
+          <button id="btnViewPL" class="btn btn-outline btn-sm" style="border: none;">📦 Packing List</button>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <button id="btnCopyId" class="btn btn-outline btn-sm" title="Copy Invoice ID for Autofill Extension">
+          📋 Copy ID
+        </button>
+        <button id="btnExportExcel" class="btn btn-success btn-sm">
+          📊 Download Excel (.XLSX)
+        </button>
+        <button onclick="window.print()" class="btn btn-primary btn-sm">
+          🖨️ Print / Save as PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Printable Document Sheet -->
+    <div class="print-document" id="printableArea">
+      <!-- Injected dynamically via js/invoice-view.js -->
+      <div style="text-align: center; padding: 4rem; color: #64748b;">
+        <h2>Loading Export Document...</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Offline SheetJS for 100% Offline Excel Generation -->
+  <script src="vendor/xlsx.full.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/invoice-view.js"></script>
+</body>
+</html>

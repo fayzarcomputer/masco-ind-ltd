@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Export Invoicing & Analytics - MASCO INDUSTRIES LIMITED</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div style="background: #fff; padding: 4px; border-radius: 4px; display: flex; align-items: center;">
+        <img src="assets/masco-logo.svg" alt="Masco" style="width: 28px; height: 28px;">
+      </div>
+      <div>
+        <div class="brand-title">MASCO INDUSTRIES LIMITED</div>
+        <span class="brand-subtitle">Commercial Export Invoicing & Management System</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Dashboard</a>
+      <a href="invoice-entry.html" class="nav-link">New Invoice Entry</a>
+      <a href="clients.html" class="nav-link">Buyers & Clients</a>
+      <a href="extension-info.html" class="nav-link">Autofill Extension</a>
+      <a href="invoice-entry.html" class="nav-btn">+ Create Export Invoice</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- Header Controls -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 1.6rem; color: var(--dark);">Commercial Export Performance & Invoicing</h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          MASCO Industries Limited &bull; Ready-Made Garments (RMG) Commercial Export Division
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <label for="filterMonth" style="font-size: 0.85rem; font-weight: 600;">Filter Month:</label>
+        <input type="month" id="filterMonth" class="form-control" style="width: auto;">
+        <button id="btnFilter" class="btn btn-primary btn-sm">Filter</button>
+        <button id="btnReset" class="btn btn-outline btn-sm">Reset</button>
+      </div>
+    </div>
+
+    <!-- Stat Cards Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Export Revenue</div>
+        <div class="stat-value" id="statRevenueUSD">$0.00</div>
+        <div class="stat-subtext" id="statRevenueBDT">BDT: 0.00 (Rate: 122)</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-label">Total Exported Pcs</div>
+        <div class="stat-value" id="statTotalPcs">0</div>
+        <div class="stat-subtext">Total Quantity Shipped</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">Total Cartons Shipped</div>
+        <div class="stat-value" id="statTotalCarton">0</div>
+        <div class="stat-subtext" id="statGrossWeight">Gross Wt: 0.00 KG</div>
+      </div>
+      <div class="stat-card emerald">
+        <div class="stat-label">Total Export Invoices</div>
+        <div class="stat-value" id="statTotalInvoices">0</div>
+        <div class="stat-subtext" id="statTotalCBM">Volume: 0.000 CBM</div>
+      </div>
+    </div>
+
+    <!-- 2 Column Analytics View -->
+    <div class="form-grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📅 Monthly Export Performance</div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th class="text-center">Invoices</th>
+                <th class="text-right">Pcs</th>
+                <th class="text-right">Cartons</th>
+                <th class="text-right">Revenue (USD)</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyTableBody">
+              <tr><td colspan="5" class="text-center">Loading monthly statistics...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏢 Buyer Wise Export Revenue</div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Buyer / Client</th>
+                <th class="text-center">Invoices</th>
+                <th class="text-right">Total Pcs</th>
+                <th class="text-right">Total USD</th>
+              </tr>
+            </thead>
+            <tbody id="buyerTableBody">
+              <tr><td colspan="4" class="text-center">Loading buyer breakdown...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Invoices Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📑 Commercial Export Invoices List</div>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="searchInvoice" placeholder="Search Invoice / EXP No..." class="form-control" style="width: 260px;">
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Invoice No</th>
+              <th>Date</th>
+              <th>EXP Number</th>
+              <th>Buyer / Consignee</th>
+              <th class="text-right">Carton</th>
+              <th class="text-right">Pcs</th>
+              <th class="text-right">Amount (USD)</th>
+              <th class="text-center">Status</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="invoicesTableBody">
+            <tr><td colspan="9" class="text-center">Loading export invoices...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    MASCO INDUSTRIES LIMITED &copy; 2026. Export ERP & Commercial Invoicing System.
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/analytics.js"></script>
+</body>
+</html>
