@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>লগইন - MASCO INDUSTRIES LIMITED</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f766e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 460px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .login-header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+      color: #ffffff;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .login-logo {
+      width: 58px;
+      height: 58px;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 6px;
+      margin: 0 auto 0.75rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .login-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .login-header h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      margin: 0 0 4px 0;
+      color: #ffffff;
+    }
+
+    .login-header p {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin: 0;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+
+    .login-badge {
+      display: inline-block;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .login-body {
+      padding: 2rem 1.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.4rem;
+    }
+
+    .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-with-icon span.icon {
+      position: absolute;
+      left: 12px;
+      font-size: 1.1rem;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    .input-with-icon input {
+      width: 100%;
+      padding: 0.75rem 0.75rem 0.75rem 2.4rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #0f172a;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+
+    .input-with-icon input:focus {
+      outline: none;
+      border-color: #1e3a8a;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-login:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(15, 118, 110, 0.4);
+    }
+
+    .btn-login:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .login-error {
+      display: none;
+      background: #fee2e2;
+      border: 1px solid #ef4444;
+      color: #991b1b;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Quick Login Section for Fast Testing */
+    .quick-login-box {
+      margin-top: 1.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px dashed #cbd5e1;
+    }
+
+    .quick-login-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #64748b;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .quick-roles-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .quick-role-btn {
+      padding: 0.5rem 0.6rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: #f8fafc;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .quick-role-btn:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+
+    .quick-role-btn .role-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    .login-footer {
+      background: #f8fafc;
+      padding: 0.85rem;
+      text-align: center;
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <!-- Header -->
+    <div class="login-header">
+      <div class="login-logo">
+        <img src="assets/masco-logo.svg" alt="Masco Logo">
+      </div>
+      <h1>MASCO INDUSTRIES LIMITED</h1>
+      <p>Commercial Export Invoicing & Management System</p>
+      <div class="login-badge">🔒 এন্টারপ্রাইজ সিকিউরড অ্যাক্সেস পোর্টাল</div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-body">
+      <div id="loginError" class="login-error">
+        <span>⚠️</span>
+        <span id="loginErrorText">ভুল মোবাইল নম্বর অথবা গোপন পিন।</span>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="mobile">📱 মোবাইল নম্বর (User ID)</label>
+          <div class="input-with-icon">
+            <span class="icon">📞</span>
+            <input 
+              type="tel" 
+              id="mobile" 
+              placeholder="017XXXXXXXX" 
+              required 
+              autocomplete="tel"
+              autofocus
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="pin">🔑 সিকিউরিটি পিন (Security PIN)</label>
+          <div class="input-with-icon">
+            <span class="icon">🔒</span>
+            <input 
+              type="password" 
+              id="pin" 
+              placeholder="৪ অথবা ৬ ডিজিটের পিন" 
+              required 
+              autocomplete="current-password"
+              maxlength="10"
+            >
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #475569; cursor: pointer;">
+            <input type="checkbox" id="rememberMe" checked>
+            লগইন তথ্য সংরক্ষণ করুন
+          </label>
+        </div>
+
+        <button type="submit" id="btnLogin" class="btn-login">
+          <span>প্রবেশ করুন (Login)</span>
+          <span>➜</span>
+        </button>
+      </form>
+
+      <!-- Quick Role Selection for Instant Testing -->
+      <div class="quick-login-box">
+        <div class="quick-login-title">⚡ দ্রুত টেস্টের জন্য রোল সিলেক্ট করুন</div>
+        <div class="quick-roles-grid">
+          <button type="button" class="quick-role-btn" onclick="fillQuickLogin('01711000001', '1234')">
+            <span class="role-tag">👷 সাধারণ কর্মী ১ (Worker)</span>
+            <span>01711000001 (PIN: 1234)</span>
+          </button>
+
+          <button type="button" class="quick-role-btn" onclick="fillQuickLogin('01711000002', '1234')">
+            <span class="role-tag">👷 সাধারণ কর্মী ২ (Worker)</span>
+            <span>01711000002 (PIN: 1234)</span>
+          </button>
+
+          <button type="button" class="quick-role-btn" onclick="fillQuickLogin('01811000002', '2345')">
+            <span class="role-tag">👔 সুপারভাইজার (Supervisor)</span>
+            <span>01811000002 (PIN: 2345)</span>
+          </button>
+
+          <button type="button" class="quick-role-btn" onclick="fillQuickLogin('01911000003', '3456')">
+            <span class="role-tag">🏢 কোম্পানি এডমিন (Admin)</span>
+            <span>01911000003 (PIN: 3456)</span>
+          </button>
+        </div>
+
+        <div style="margin-top: 0.5rem;">
+          <button type="button" class="quick-role-btn" style="width: 100%; background: #f1f5f9;" onclick="fillQuickLogin('01611000004', '9999')">
+            <span class="role-tag" style="color: #7c3aed;">👑 মাস্টার ওয়েব এডমিন (Master IT Admin)</span>
+            <span>01611000004 (PIN: 9999) &bull; সিস্টেম সুপারভাইজরি এক্সেস</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      MASCO INDUSTRIES LIMITED &bull; বাণিজ্যিক রপ্তানি ব্যবস্থাপনা &copy; 2026
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    function fillQuickLogin(mobile, pin) {
+      document.getElementById('mobile').value = mobile;
+      document.getElementById('pin').value = pin;
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('btnLogin').focus();
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mobile = document.getElementById('mobile').value;
+      const pin = document.getElementById('pin').value;
+      const remember = document.getElementById('rememberMe').checked;
+      const btn = document.getElementById('btnLogin');
+      const errBox = document.getElementById('loginError');
+      const errText = document.getElementById('loginErrorText');
+
+      errBox.style.display = 'none';
+      btn.disabled = true;
+      btn.innerHTML = '<span>যাচাই করা হচ্ছে...</span>';
+
+      try {
+        const res = await Auth.login(mobile, pin);
+        if (res.success) {
+          btn.innerHTML = '<span>লগইন সফল! প্রবেশ করা হচ্ছে...</span>';
+          btn.style.background = '#10b981';
+
+          // Check if there was a previous redirect URL
+          const redirectUrl = sessionStorage.getItem('masco_redirect_after_login');
+          sessionStorage.removeItem('masco_redirect_after_login');
+
+          setTimeout(() => {
+            if (redirectUrl && !redirectUrl.includes('login.html')) {
+              window.location.href = redirectUrl;
+            } else {
+              window.location.href = 'index.html';
+            }
+          }, 400);
+        } else {
+          errText.textContent = res.error || 'ভুল মোবাইল নম্বর অথবা গোপন পিন।';
+          errBox.style.display = 'flex';
+          btn.disabled = false;
+          btn.innerHTML = '<span>প্রবেশ করুন (Login)</span> <span>➜</span>';
+        }
+      } catch (err) {
+        errText.textContent = 'লগইন প্রক্রিয়ায় ত্রুটি: ' + err.message;
+        errBox.style.display = 'flex';
+        btn.disabled = false;
+        btn.innerHTML = '<span>প্রবেশ করুন (Login)</span> <span>➜</span>';
+      }
+    });
+  </script>
+</body>
+</html>

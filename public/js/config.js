@@ -1,6 +1,7 @@
 // ==============================================================================
 // GLOBAL CONFIGURATION & SUPABASE LIVE REST CLIENT
 // Connects to live Supabase on both Localhost & GitHub Pages
+// Includes Role-Based Data Isolation & User Governance
 // ==============================================================================
 
 const SUPABASE_URL = 'https://qnawduuykgofrqwljhah.supabase.co';
@@ -20,7 +21,108 @@ const sbHeaders = {
 // Unified API Handler
 const API = {
   // ----------------------------------------------------------------------------
-  // 1. CLIENTS API
+  // 1. AUTHENTICATION & USERS API
+  // ----------------------------------------------------------------------------
+  loginUser: async (mobile, pin) => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/users?mobile=eq.${encodeURIComponent(mobile)}&select=*`, {
+        headers: sbHeaders
+      });
+      if (res.ok) {
+        const users = await res.json();
+        if (users && users.length > 0) {
+          const u = users[0];
+          if (u.pin === pin) {
+            if (u.is_active === false) {
+              return { success: false, error: 'আপনার অ্যাকাউন্টটি নিষ্ক্রিয় (Deactivated) করা হয়েছে।' };
+            }
+            return { success: true, data: u };
+          } else {
+            return { success: false, error: 'ভুল সিকিউরিটি পিন।' };
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Supabase login check failed, falling back to local verification:', e);
+    }
+    return { success: false, error: 'ব্যবহারকারী খুঁজে পাওয়া যায়নি।' };
+  },
+
+  getUsers: async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*,supervisor:supervisor_id(name)&order=created_at.asc`, {
+        headers: sbHeaders
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return { success: true, source: 'supabase', data };
+      }
+    } catch (e) {
+      console.warn('Supabase getUsers failed, using local storage:', e);
+    }
+    const defaultUsers = window.Auth?.DEFAULT_USERS || [];
+    const localUsers = JSON.parse(localStorage.getItem('masco_users') || 'null') || defaultUsers;
+    return { success: true, source: 'fallback', data: localUsers };
+  },
+
+  createUser: async (payload) => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/users`, {
+        method: 'POST',
+        headers: sbHeaders,
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return { success: true, data: data[0] };
+      }
+      const err = await res.json();
+      return { success: false, error: err.message };
+    } catch (e) {
+      console.warn('Create user online failed, saving locally:', e);
+    }
+
+    // Local fallback
+    const users = JSON.parse(localStorage.getItem('masco_users') || 'null') || [...(window.Auth?.DEFAULT_USERS || [])];
+    const newUser = {
+      id: 'usr-' + Date.now(),
+      created_at: new Date().toISOString(),
+      is_active: true,
+      ...payload
+    };
+    users.push(newUser);
+    localStorage.setItem('masco_users', JSON.stringify(users));
+    return { success: true, source: 'fallback', data: newUser };
+  },
+
+  updateUser: async (id, payload) => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: sbHeaders,
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return { success: true, data: data[0] };
+      }
+    } catch (e) {
+      console.warn('Update user online failed, updating locally:', e);
+    }
+
+    // Local fallback
+    const users = JSON.parse(localStorage.getItem('masco_users') || 'null') || [...(window.Auth?.DEFAULT_USERS || [])];
+    const idx = users.findIndex(u => u.id === id);
+    if (idx !== -1) {
+      users[idx] = { ...users[idx], ...payload };
+      localStorage.setItem('masco_users', JSON.stringify(users));
+      return { success: true, source: 'fallback', data: users[idx] };
+    }
+    return { success: false, error: 'User not found' };
+  },
+
+  // ----------------------------------------------------------------------------
+  // 2. CLIENTS API
   // ----------------------------------------------------------------------------
   getClients: async () => {
     try {
@@ -58,12 +160,25 @@ const API = {
   },
 
   // ----------------------------------------------------------------------------
-  // 2. INVOICES API
+  // 3. INVOICES API (WITH ROLE-BASED ACCESS CONTROL)
   // ----------------------------------------------------------------------------
   getInvoices: async (params = {}) => {
+    const currentUser = window.Auth ? window.Auth.getUser() : null;
+
     try {
       let url = `${SUPABASE_URL}/rest/v1/invoices?select=*,clients(applicant_name,country)&order=invoice_date.desc`;
       
+      // Role-based data filtering:
+      if (currentUser) {
+        if (currentUser.role === 'worker') {
+          // Worker sees ONLY invoices created by themselves
+          url += `&created_by=eq.${currentUser.id}`;
+        } else if (currentUser.role === 'supervisor') {
+          // Supervisor sees invoices of their assigned workers or tagged with supervisor_id
+          url += `&supervisor_id=eq.${currentUser.id}`;
+        }
+      }
+
       if (params.month) {
         url += `&invoice_date=gte.${params.month}-01&invoice_date=lte.${params.month}-31`;
       }
@@ -79,13 +194,21 @@ const API = {
     } catch (e) {
       console.warn('Supabase invoices fetch failed:', e);
     }
-    const list = JSON.parse(localStorage.getItem('masco_invoices') || '[]');
+
+    // Local fallback with role filtering
+    let list = JSON.parse(localStorage.getItem('masco_invoices') || '[]');
+    if (currentUser) {
+      if (currentUser.role === 'worker') {
+        list = list.filter(i => !i.created_by || i.created_by === currentUser.id);
+      } else if (currentUser.role === 'supervisor') {
+        list = list.filter(i => !i.supervisor_id || i.supervisor_id === currentUser.id);
+      }
+    }
     return { success: true, source: 'fallback', data: list };
   },
 
   getInvoiceById: async (id) => {
     try {
-      // Query invoice with client details
       const invRes = await fetch(`${SUPABASE_URL}/rest/v1/invoices?id=eq.${id}&select=*,clients(*)`, {
         headers: sbHeaders
       });
@@ -93,7 +216,6 @@ const API = {
         const invList = await invRes.json();
         if (invList && invList.length > 0) {
           const invoice = invList[0];
-          // Query line items
           const itemsRes = await fetch(`${SUPABASE_URL}/rest/v1/invoice_items?invoice_id=eq.${id}&select=*&order=created_at.asc`, {
             headers: sbHeaders
           });
@@ -113,6 +235,8 @@ const API = {
   },
 
   createInvoice: async (data) => {
+    const currentUser = window.Auth ? window.Auth.getUser() : null;
+
     try {
       let total_carton = 0, total_pcs = 0, total_gw = 0, total_nw = 0, total_cbm = 0, total_amt = 0;
       const validatedItems = (data.items || []).map(it => {
@@ -182,7 +306,11 @@ const API = {
         total_net_weight: parseFloat(total_nw.toFixed(2)),
         total_cbm: parseFloat(total_cbm.toFixed(3)),
         total_amount: parseFloat(total_amt.toFixed(2)),
-        status: 'ISSUED'
+        status: 'ISSUED',
+        // Attaching creator and supervisor
+        created_by: currentUser ? currentUser.id : null,
+        supervisor_id: currentUser ? (currentUser.supervisor_id || (currentUser.role === 'supervisor' ? currentUser.id : null)) : null,
+        approval_status: (currentUser && (currentUser.role === 'admin' || currentUser.role === 'master_admin')) ? 'APPROVED' : 'PENDING'
       };
 
       // 1. Insert Invoice
@@ -218,6 +346,24 @@ const API = {
     }
   },
 
+  updateInvoiceApproval: async (id, approval_status) => {
+    const currentUser = window.Auth ? window.Auth.getUser() : null;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/invoices?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: sbHeaders,
+        body: JSON.stringify({
+          approval_status: approval_status,
+          approved_by: currentUser ? currentUser.id : null
+        })
+      });
+      if (res.ok) return { success: true };
+    } catch (e) {
+      console.warn('Update invoice approval failed online:', e);
+    }
+    return { success: true, source: 'fallback' };
+  },
+
   deleteInvoice: async (id) => {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/invoices?id=eq.${id}`, {
@@ -233,17 +379,37 @@ const API = {
   },
 
   // ----------------------------------------------------------------------------
-  // 3. ANALYTICS API
+  // 4. ANALYTICS API (ROLE-ISOLATED)
   // ----------------------------------------------------------------------------
   getAnalytics: async (params = {}) => {
+    const currentUser = window.Auth ? window.Auth.getUser() : null;
+
     try {
       let url = `${SUPABASE_URL}/rest/v1/invoices?select=*,clients(applicant_name),invoice_items(*)`;
+      
+      // Filter by role
+      if (currentUser) {
+        if (currentUser.role === 'worker') {
+          url += `&created_by=eq.${currentUser.id}`;
+        } else if (currentUser.role === 'supervisor') {
+          url += `&supervisor_id=eq.${currentUser.id}`;
+        }
+      }
+
       if (params.month) {
         url += `&invoice_date=gte.${params.month}-01&invoice_date=lte.${params.month}-31`;
       }
       const res = await fetch(url, { headers: sbHeaders });
       if (res.ok) {
-        const invoices = await res.json();
+        let invoices = await res.json();
+
+        // Local role filtering assurance
+        if (currentUser && currentUser.role === 'worker') {
+          invoices = invoices.filter(i => !i.created_by || i.created_by === currentUser.id);
+        } else if (currentUser && currentUser.role === 'supervisor') {
+          invoices = invoices.filter(i => !i.supervisor_id || i.supervisor_id === currentUser.id);
+        }
+
         let totalPcs = 0, totalCartons = 0, totalRev = 0, totalGw = 0, totalCbm = 0;
         const monthlyMap = {}, buyerMap = {};
 

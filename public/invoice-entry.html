@@ -20,22 +20,36 @@
       </div>
     </a>
     <div class="nav-links">
-      <a href="index.html" class="nav-link">Dashboard</a>
-      <a href="invoice-entry.html" class="nav-link active">New Invoice Entry</a>
-      <a href="clients.html" class="nav-link">Buyers & Clients</a>
-      <a href="extension-info.html" class="nav-link">Autofill Extension</a>
+      <a href="index.html" class="nav-link">ড্যাশবোর্ড</a>
+      <a href="invoice-entry.html" class="nav-link active">নতুন চালান এন্ট্রি</a>
+      <a href="clients.html" class="nav-link" id="navLinkClients">বায়ার ও ক্লায়েন্ট</a>
+      <a href="extension-info.html" class="nav-link">অটোফিল এক্সটেনশন</a>
     </div>
   </nav>
 
   <div class="container">
+    <!-- Creator Attribution Badge -->
+    <div id="creatorBadge" style="display: flex; align-items: center; justify-content: space-between; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px; padding: 0.75rem 1.25rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 1.4rem;">👷</span>
+        <div>
+          <strong id="creatorName" style="color: #166534; font-size: 0.95rem;">চালান এন্ট্রি কারক: লোড হচ্ছে...</strong>
+          <div id="creatorInfo" style="font-size: 0.82rem; color: #15803d;">আপনার আইডি এই চালানের সাথে স্থায়ীভাবে সংরক্ষিত থাকবে।</div>
+        </div>
+      </div>
+      <div>
+        <span class="badge" style="background: #16a34a; color: #fff; font-weight: 700; padding: 5px 12px;">স্বয়ংক্রিয় সিকিউরিটি ট্র্যাকিং সক্রিয়</span>
+      </div>
+    </div>
+
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
       <div>
-        <h1 style="font-size: 1.5rem; color: var(--dark);">Commercial Export Invoice Entry</h1>
+        <h1 style="font-size: 1.5rem; color: var(--dark);">বাণিজ্যিক রপ্তানি চালান এন্ট্রি (Export Invoice Entry)</h1>
         <p style="color: var(--text-muted); font-size: 0.85rem;">
           MASCO Official Export Documentation (Commercial Invoice & Packing List)
         </p>
       </div>
-      <a href="index.html" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+      <a href="index.html" class="btn btn-outline btn-sm">← ড্যাশবোর্ডে ফিরে যান</a>
     </div>
 
     <form id="invoiceForm">
@@ -43,8 +57,8 @@
       <!-- Section 1: Buyer / Consignee Selection (Auto-fill) -->
       <div class="card">
         <div class="card-header">
-          <div class="card-title">🏢 1. Buyer / Applicant Information (Auto-fill)</div>
-          <a href="clients.html" class="btn btn-outline btn-sm" target="_blank">+ Add New Buyer</a>
+          <div class="card-title">🏢 ১. বায়ার / আমদানিকারক তথ্য (Buyer / Applicant Information)</div>
+          <a href="clients.html" id="btnAddBuyerBtn" class="btn btn-outline btn-sm" target="_blank">+ নতুন বায়ার যোগ করুন</a>
         </div>
         
         <div class="form-grid-3">
@@ -293,6 +307,7 @@
     MASCO INDUSTRIES LIMITED &copy; 2026. Export ERP & Commercial Invoicing System.
   </footer>
 
+  <script src="js/auth.js"></script>
   <script src="js/config.js"></script>
   <script src="js/entry-form.js"></script>
 </body>

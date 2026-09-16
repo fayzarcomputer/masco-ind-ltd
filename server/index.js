@@ -434,7 +434,146 @@ app.get('/api/analytics', async (req, res) => {
   }
 });
 
+// -----------------------------------------------------------------------------
+// 5. AUTHENTICATION & USERS API
+// -----------------------------------------------------------------------------
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { mobile, pin } = req.body;
+    if (!mobile || !pin) {
+      return res.status(400).json({ success: false, error: 'Mobile number and PIN are required.' });
+    }
+
+    if (isConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('mobile', mobile.trim())
+          .single();
+
+        if (!error && data) {
+          if (data.pin !== pin.trim()) {
+            return res.status(401).json({ success: false, error: 'ভুল সিকিউরিটি পিন।' });
+          }
+          if (data.is_active === false) {
+            return res.status(403).json({ success: false, error: 'আপনার অ্যাকাউন্টটি নিষ্ক্রিয় করা হয়েছে।' });
+          }
+          return res.json({ success: true, data });
+        }
+      } catch (sbErr) {
+        console.warn('Supabase login query error, using mock fallback:', sbErr.message);
+      }
+    }
+
+    // Fallback verification
+    const user = mockDb.users.find(u => u.mobile === mobile.trim());
+    if (!user) {
+      return res.status(401).json({ success: false, error: 'ব্যবহারকারী খুঁজে পাওয়া যায়নি।' });
+    }
+    if (user.pin !== pin.trim()) {
+      return res.status(401).json({ success: false, error: 'ভুল সিকিউরিটি পিন।' });
+    }
+    if (user.is_active === false) {
+      return res.status(403).json({ success: false, error: 'আপনার অ্যাকাউন্টটি নিষ্ক্রিয় করা হয়েছে।' });
+    }
+    return res.json({ success: true, data: user });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/users', async (req, res) => {
+  try {
+    if (isConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*, supervisor:supervisor_id(name)')
+          .order('created_at', { ascending: true });
+        if (!error && data) {
+          return res.json({ success: true, data });
+        }
+      } catch (sbErr) {
+        console.warn('Supabase getUsers error, falling back to mockDb:', sbErr.message);
+      }
+    }
+    return res.json({ success: true, data: mockDb.users });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/users', async (req, res) => {
+  try {
+    const newUser = {
+      name: req.body.name,
+      mobile: req.body.mobile,
+      pin: req.body.pin,
+      role: req.body.role,
+      supervisor_id: req.body.supervisor_id || null,
+      department: req.body.department || 'Commercial Export',
+      is_active: true,
+      created_at: new Date().toISOString()
+    };
+
+    if (isConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .insert([newUser])
+          .select()
+          .single();
+        if (!error && data) return res.status(201).json({ success: true, data });
+      } catch (sbErr) {
+        console.warn('Supabase createUser failed, saving in mockDb:', sbErr.message);
+      }
+    }
+
+    newUser.id = 'usr-' + Date.now();
+    mockDb.users.push(newUser);
+    return res.status(201).json({ success: true, data: newUser });
+  } catch (err) {
+    console.error('Error creating user:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.patch('/api/users/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    if (isConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
+        if (!error && data) return res.json({ success: true, data });
+      } catch (sbErr) {
+        console.warn('Supabase updateUser failed, updating in mockDb:', sbErr.message);
+      }
+    }
+
+    const idx = mockDb.users.findIndex(u => u.id === id);
+    if (idx !== -1) {
+      mockDb.users[idx] = { ...mockDb.users[idx], ...updates };
+      return res.json({ success: true, data: mockDb.users[idx] });
+    }
+    return res.status(404).json({ success: false, error: 'User not found' });
+  } catch (err) {
+    console.error('Error updating user:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Restart server if task running or listen
 app.listen(PORT, () => {
   console.log(`🚀 Masco Industries Export Server running at http://localhost:${PORT}`);
 });
+

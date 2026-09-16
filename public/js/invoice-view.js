@@ -25,6 +25,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const res = await API.getInvoiceById(invoiceId);
     if (res.success && res.data) {
       currentInvoice = res.data;
+
+      // Role Access Enforcement: Worker can only view their own invoices
+      const user = window.Auth ? window.Auth.getUser() : null;
+      if (user && user.role === 'worker') {
+        if (currentInvoice.created_by && currentInvoice.created_by !== user.id) {
+          alert('🚫 অননুমোদিত এক্সেস! আপনি শুধুমাত্র আপনার নিজের তৈরিকৃত চালান দেখতে পারেন।');
+          window.location.href = 'index.html';
+          return;
+        }
+      }
+
       renderDocument();
     } else {
       document.getElementById('printableArea').innerHTML = `

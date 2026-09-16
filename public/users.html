@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ইউজার ও কর্মী ম্যানেজমেন্ট - MASCO INDUSTRIES LIMITED</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #1e3a8a, #0f766e);
+      color: #ffffff;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      color: #fff;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+      opacity: 0.8;
+    }
+
+    .modal-close:hover {
+      opacity: 1;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .role-badge-worker {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    .role-badge-supervisor {
+      background: #ccfbf1;
+      color: #0f766e;
+      border: 1px solid #99f6e4;
+    }
+
+    .role-badge-admin {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+
+    .role-badge-master {
+      background: #f3e8ff;
+      color: #6b21a8;
+      border: 1px solid #e9d5ff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div style="background: #fff; padding: 4px; border-radius: 4px; display: flex; align-items: center;">
+        <img src="assets/masco-logo.svg" alt="Masco" style="width: 28px; height: 28px;">
+      </div>
+      <div>
+        <div class="brand-title">MASCO INDUSTRIES LIMITED</div>
+        <span class="brand-subtitle">Commercial Export Invoicing & Management System</span>
+      </div>
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">ড্যাশবোর্ড</a>
+      <a href="invoice-entry.html" class="nav-link">নতুন চালান এন্ট্রি</a>
+      <a href="clients.html" class="nav-link">বায়ার ও ক্লায়েন্ট</a>
+      <a href="users.html" class="nav-link active">ইউজার ম্যানেজমেন্ট</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    
+    <!-- Top Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 1.5rem; color: var(--dark); margin: 0 0 4px 0;">👥 এন্টারপ্রাইজ ইউজার ও কর্মী ম্যানেজমেন্ট</h1>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
+          সাধারণ কর্মী, সুপারভাইজার এবং প্রশাসনিক আইডি তৈরি, তদারকি ও নিয়ন্ত্রণ প্যানেল
+        </p>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="btnOpenAddUser" class="btn btn-primary" style="background: linear-gradient(135deg, #1e3a8a, #0f766e); font-weight: 700;">
+          + নতুন কর্মী / সুপারভাইজার আইডি তৈরি
+        </button>
+      </div>
+    </div>
+
+    <!-- Hierarchy Overview Cards -->
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+      <div class="stat-card teal">
+        <div class="stat-label">সাধারণ কর্মী (Workers)</div>
+        <div class="stat-value" id="statWorkerCount">0</div>
+        <div class="stat-subtext">চালান প্রস্তুতকারক ও প্যাকিং</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">সুপারভাইজার (Supervisors)</div>
+        <div class="stat-value" id="statSupervisorCount">0</div>
+        <div class="stat-subtext">১০-২০ জন কর্মীর দল তদারককারী</div>
+      </div>
+
+      <div class="stat-card amber">
+        <div class="stat-label">প্রতিষ্ঠান এডমিন (Admins)</div>
+        <div class="stat-value" id="statAdminCount">0</div>
+        <div class="stat-subtext">বাণিজ্যিক রপ্তানি ব্যবস্থাপনা</div>
+      </div>
+
+      <div class="stat-card emerald">
+        <div class="stat-label">ডাটাবেজ ও নিরাপত্তা স্ট্যাটাস</div>
+        <div class="stat-value" style="font-size: 1.15rem; color: #166534;" id="statDbStatus">সংযুক্ত 🟢</div>
+        <div class="stat-subtext">Supabase Cloud + RLS Security</div>
+      </div>
+    </div>
+
+    <!-- Users Table Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📋 অনুমোদিত ইউজার তালিকা ও অ্যাক্সেস পারমিশন</div>
+        <div>
+          <input type="text" id="searchUser" placeholder="নাম অথবা মোবাইল দিয়ে খুঁজুন..." class="form-control" style="width: 260px;">
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>কর্মীর নাম (Name)</th>
+              <th>মোবাইল নম্বর (Login ID)</th>
+              <th>রোল ও দায়িত্ব</th>
+              <th>দায়িত্বপ্রাপ্ত সুপারভাইজার</th>
+              <th>বিভাগ / ডিপার্টমেন্ট</th>
+              <th class="text-center">স্ট্যাটাস</th>
+              <th class="text-center">অ্যাকশন</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="7" class="text-center">ইউজারদের তালিকা লোড হচ্ছে...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create User Modal -->
+  <div class="modal-overlay" id="addUserModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>+ নতুন ইউজার / কর্মী অ্যাকাউন্ট তৈরি</h3>
+        <button class="modal-close" id="btnCloseModal">&times;</button>
+      </div>
+      <form id="addUserForm" class="modal-body">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label" for="userName">পুরো নাম (Full Name) <span class="required">*</span></label>
+          <input type="text" id="userName" class="form-control" placeholder="যেমন: মো: রফিকুল ইসলাম" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label" for="userMobile">মোবাইল নম্বর (Login ID) <span class="required">*</span></label>
+          <input type="tel" id="userMobile" class="form-control" placeholder="017XXXXXXXX" required>
+          <small style="color: #64748b; font-size: 0.75rem;">এই নম্বরটি ব্যবহার করে লগইন করতে হবে।</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label" for="userPin">সিকিউরিটি পিন (Security PIN) <span class="required">*</span></label>
+          <input type="password" id="userPin" class="form-control" placeholder="৪ অথবা ৬ ডিজিটের গোপন পিন" maxlength="10" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label class="form-label" for="userRole">অ্যাক্সেস রোল (Role Level) <span class="required">*</span></label>
+          <select id="userRole" class="form-control" required>
+            <option value="worker">১. সাধারণ কর্মী (Worker - চালান তৈরি ও নিজস্ব ড্যাশবোর্ড)</option>
+            <option value="supervisor">২. সুপারভাইজার (Supervisor - ১০-২০ জন কর্মীর তদারকি ও অনুমোদন)</option>
+            <option value="admin">৩. কোম্পানি এডমিন (Admin - সার্বিক বাণিজ্যিক নিয়ন্ত্রণ)</option>
+          </select>
+        </div>
+
+        <!-- Supervisor Assignment (Active only if Worker) -->
+        <div class="form-group" id="supervisorSelectGroup" style="margin-bottom: 1rem;">
+          <label class="form-label" for="userSupervisor">দায়িত্বপ্রাপ্ত সুপারভাইজার নির্বাচন করুন</label>
+          <select id="userSupervisor" class="form-control">
+            <option value="">-- সুপারভাইজার নির্ধারণ করুন --</option>
+          </select>
+          <small style="color: #64748b; font-size: 0.75rem;">কর্মী যে সুপারভাইজারের আওতায় কাজ করবেন।</small>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label" for="userDepartment">বিভাগ / ডিপার্টমেন্ট</label>
+          <input type="text" id="userDepartment" class="form-control" value="বাণিজ্যিক রপ্তানি ও প্যাকিং">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" id="btnCancelModal" class="btn btn-outline">বাতিল</button>
+          <button type="submit" id="btnSaveUser" class="btn btn-success" style="padding: 0.65rem 1.75rem;">
+            💾 আইডি তৈরি নিশ্চিত করুন
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer">
+    MASCO INDUSTRIES LIMITED &copy; 2026. Export ERP & Commercial Invoicing System.
+  </footer>
+
+  <script src="js/auth.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/users.js"></script>
+</body>
+</html>

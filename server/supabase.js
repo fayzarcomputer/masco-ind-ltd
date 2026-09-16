@@ -22,6 +22,55 @@ if (supabaseUrl && supabaseKey && !supabaseUrl.includes('your-project-ref')) {
 
 // In-Memory fallback database preloaded with the real Masco Industries Limited export invoice
 export const mockDb = {
+  users: [
+    {
+      id: '44444444-4444-4444-4444-444444444444',
+      name: 'Fayzar IT Master Admin',
+      mobile: '01611000004',
+      pin: '9999',
+      role: 'master_admin',
+      department: 'Systems & Architecture',
+      is_active: true
+    },
+    {
+      id: '33333333-3333-3333-3333-333333333333',
+      name: 'Masco Commercial Admin',
+      mobile: '01911000003',
+      pin: '3456',
+      role: 'admin',
+      department: 'Commercial Management',
+      is_active: true
+    },
+    {
+      id: '22222222-2222-2222-2222-222222222222',
+      name: 'Kamrul Hasan - Floor Supervisor',
+      mobile: '01811000002',
+      pin: '2345',
+      role: 'supervisor',
+      department: 'Export Operations',
+      is_active: true
+    },
+    {
+      id: '11111111-1111-1111-1111-111111111111',
+      name: 'Md. Rafiqul Islam - Operator',
+      mobile: '01711000001',
+      pin: '1234',
+      role: 'worker',
+      supervisor_id: '22222222-2222-2222-2222-222222222222',
+      department: 'Data Entry & Packing',
+      is_active: true
+    },
+    {
+      id: '11111111-1111-1111-1111-222222222222',
+      name: 'Anisur Rahman - Entry Operator',
+      mobile: '01711000002',
+      pin: '1234',
+      role: 'worker',
+      supervisor_id: '22222222-2222-2222-2222-222222222222',
+      department: 'Data Entry & Packing',
+      is_active: true
+    }
+  ],
   clients: [
     {
       id: '11111111-1111-1111-1111-111111111111',

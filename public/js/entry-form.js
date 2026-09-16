@@ -7,6 +7,23 @@ let clientsCache = [];
 let rowCounter = 0;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Display Logged In Creator Info
+  const user = window.Auth ? window.Auth.getUser() : null;
+  if (user) {
+    const creatorName = document.getElementById('creatorName');
+    const creatorInfo = document.getElementById('creatorInfo');
+    if (creatorName) creatorName.textContent = `চালান প্রস্তুতকারক: ${user.name} (${user.role.toUpperCase()})`;
+    if (creatorInfo) creatorInfo.textContent = `মোবাইল: ${user.mobile} | বিভাগ: ${user.department || 'Commercial'} | আইডি: ${user.id}`;
+    
+    // Workers cannot add new buyers directly
+    if (window.Auth.isWorker()) {
+      const btnAddBuyer = document.getElementById('btnAddBuyerBtn');
+      if (btnAddBuyer) btnAddBuyer.style.display = 'none';
+      const navClients = document.getElementById('navLinkClients');
+      if (navClients) navClients.style.display = 'none';
+    }
+  }
+
   await loadClientsDropdown();
 
   // Load the exact 4 real product rows from the invoice
