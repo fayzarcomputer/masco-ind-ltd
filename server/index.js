@@ -73,7 +73,7 @@ app.post('/api/clients', async (req, res) => {
 // -----------------------------------------------------------------------------
 app.get('/api/invoices', async (req, res) => {
   try {
-    const { month, client_id, search } = req.query;
+    const { month, client_id, search, worker_id, supervisor_id, status } = req.query;
 
     if (isConfigured && supabase) {
       let query = supabase
@@ -82,33 +82,78 @@ app.get('/api/invoices', async (req, res) => {
         .order('invoice_date', { ascending: false });
 
       if (client_id) query = query.eq('client_id', client_id);
+      if (worker_id) query = query.eq('created_by', worker_id);
+      if (supervisor_id) query = query.eq('supervisor_id', supervisor_id);
+      if (status) query = query.eq('approval_status', status);
       if (month) {
         const startDate = `${month}-01`;
         const endDate = `${month}-31`;
         query = query.gte('invoice_date', startDate).lte('invoice_date', endDate);
       }
       if (search) {
-        query = query.or(`invoice_no.ilike.%${search}%,exp_no.ilike.%${search}%`);
+        query = query.or(`invoice_no.ilike.%${search}%,exp_no.ilike.%${search}%,creator_name.ilike.%${search}%`);
       }
 
       const { data, error } = await query;
-      if (error) throw error;
-      return res.json({ success: true, source: 'supabase', data });
-    } else {
-      let list = [...mockDb.invoices];
-      if (client_id) list = list.filter(i => i.client_id === client_id);
-      if (month) list = list.filter(i => i.invoice_date && i.invoice_date.startsWith(month));
-      if (search) {
-        const q = search.toLowerCase();
-        list = list.filter(i => 
-          (i.invoice_no && i.invoice_no.toLowerCase().includes(q)) ||
-          (i.exp_no && i.exp_no.toLowerCase().includes(q))
-        );
+      if (!error && data) {
+        return res.json({ success: true, source: 'supabase', data });
       }
-      return res.json({ success: true, source: 'mock', data: list });
     }
+
+    // Mock DB Fallback
+    let list = [...mockDb.invoices];
+    if (client_id) list = list.filter(i => i.client_id === client_id);
+    if (worker_id) list = list.filter(i => i.created_by === worker_id);
+    if (supervisor_id) list = list.filter(i => i.supervisor_id === supervisor_id);
+    if (status) list = list.filter(i => i.approval_status === status);
+    if (month) list = list.filter(i => i.invoice_date && i.invoice_date.startsWith(month));
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(i => 
+        (i.invoice_no && i.invoice_no.toLowerCase().includes(q)) ||
+        (i.exp_no && i.exp_no.toLowerCase().includes(q)) ||
+        (i.creator_name && i.creator_name.toLowerCase().includes(q))
+      );
+    }
+    return res.json({ success: true, source: 'mock', data: list });
   } catch (err) {
     console.error('Error fetching invoices:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.patch('/api/invoices/:id/approval', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { approval_status, approved_by, approved_by_name } = req.body;
+    const updates = {
+      approval_status: approval_status || 'APPROVED',
+      approved_by: approved_by || null,
+      approved_by_name: approved_by_name || 'Authorized Signatory',
+      approval_date: new Date().toISOString()
+    };
+
+    if (isConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('invoices')
+          .update(updates)
+          .eq('id', id)
+          .select()
+          .single();
+        if (!error && data) return res.json({ success: true, data });
+      } catch (sbErr) {
+        console.warn('Supabase invoice approval update error:', sbErr.message);
+      }
+    }
+
+    const idx = mockDb.invoices.findIndex(i => i.id === id);
+    if (idx !== -1) {
+      mockDb.invoices[idx] = { ...mockDb.invoices[idx], ...updates };
+      return res.json({ success: true, data: mockDb.invoices[idx] });
+    }
+    return res.status(404).json({ success: false, error: 'Invoice not found' });
+  } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -283,7 +328,18 @@ app.post('/api/invoices', async (req, res) => {
       total_net_weight: parseFloat(total_net_weight.toFixed(2)),
       total_cbm: parseFloat(total_cbm.toFixed(3)),
       total_amount: parseFloat(total_amount.toFixed(2)),
-      status: 'ISSUED'
+      status: 'ISSUED',
+      // Audit trail & worker attribution
+      created_by: req.body.created_by || null,
+      creator_name: req.body.creator_name || 'Md. Rafiqul Islam - Operator',
+      creator_mobile: req.body.creator_mobile || '',
+      supervisor_id: req.body.supervisor_id || null,
+      supervisor_name: req.body.supervisor_name || 'Kamrul Hasan - Floor Supervisor',
+      supervisor_mobile: req.body.supervisor_mobile || '',
+      approval_status: req.body.approval_status || 'PENDING',
+      approved_by: req.body.approved_by || null,
+      approved_by_name: req.body.approved_by_name || null,
+      approval_date: req.body.approval_date || null
     };
 
     if (isConfigured && supabase) {

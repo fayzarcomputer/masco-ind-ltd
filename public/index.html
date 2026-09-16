@@ -27,6 +27,45 @@
       gap: 1rem;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
+    .kpi-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .kpi-mini-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .kpi-mini-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      background: #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .kpi-mini-title {
+      font-size: 0.78rem;
+      color: #64748b;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .kpi-mini-val {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 2px;
+    }
   </style>
 </head>
 <body>
@@ -155,30 +194,83 @@
       </div>
     </div>
 
-    <!-- Supervisor Only: Assigned Team Workers Monitoring -->
-    <div class="card" id="supervisorTeamCard" style="display: none; margin-bottom: 1.5rem;">
-      <div class="card-header" style="background: #f0fdf4; border-bottom: 1.5px solid #bbf7d0;">
-        <div class="card-title" style="color: #166534;">
-          👥 আমার আওতাধীন কর্মী ও কাজের অগ্রগতি (Assigned Workers Team)
+    <!-- ========================================================================= -->
+    <!-- WORKER PERFORMANCE & MONTHLY PRODUCTIVITY ANALYTICS (Admin & Supervisor)   -->
+    <!-- ========================================================================= -->
+    <div class="card" id="workerPerformanceSection" style="display: none; margin-bottom: 1.75rem;">
+      <div class="card-header" style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+        <div>
+          <div class="card-title" style="color: #1e3a8a; font-size: 1.05rem;">
+            📊 কর্মী পারফরম্যান্স ও মাসিক কাজের অগ্রগতি (Worker Monthly Performance)
+          </div>
+          <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748b;">
+            কোন কর্মী মাসে কতটি চালান, মোট পিস ও কার্টুন সম্পন্ন করেছে তার নির্ভুল বিশ্লেষণ
+          </p>
         </div>
-        <span class="badge" style="background: #166534; color: #fff;" id="teamCountBadge">0 জন কর্মী</span>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <label for="workerFilterMonth" style="font-size: 0.8rem; font-weight: 600;">মাস ফিল্টার:</label>
+          <input type="month" id="workerFilterMonth" class="form-control" style="width: auto; padding: 4px 8px; font-size: 0.85rem;">
+          <button id="btnWorkerFilterReset" class="btn btn-outline btn-sm">রিসেট</button>
+        </div>
       </div>
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>কর্মীর নাম</th>
-              <th>মোবাইল নম্বর</th>
-              <th>পদবি / বিভাগ</th>
-              <th class="text-center">এন্ট্রিকৃত চালান</th>
-              <th class="text-center">স্ট্যাটাস</th>
-              <th class="text-center">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody id="teamWorkersBody">
-            <tr><td colspan="6" class="text-center">কর্মীদের তথ্য লোড হচ্ছে...</td></tr>
-          </tbody>
-        </table>
+
+      <div style="padding: 1.25rem;">
+        <!-- KPI Highlights Grid -->
+        <div class="kpi-mini-grid">
+          <div class="kpi-mini-card">
+            <div class="kpi-mini-icon">🏆</div>
+            <div>
+              <div class="kpi-mini-title">মাসের সেরা কর্মী (Top Performer)</div>
+              <div class="kpi-mini-val" id="kpiTopWorker" style="color: #166534; font-size: 1rem;">-</div>
+            </div>
+          </div>
+
+          <div class="kpi-mini-card">
+            <div class="kpi-mini-icon">👥</div>
+            <div>
+              <div class="kpi-mini-title">মোট সক্রিয় কর্মী</div>
+              <div class="kpi-mini-val" id="kpiActiveWorkers">0 জন</div>
+            </div>
+          </div>
+
+          <div class="kpi-mini-card">
+            <div class="kpi-mini-icon">📦</div>
+            <div>
+              <div class="kpi-mini-title">গড় চালান / কর্মী</div>
+              <div class="kpi-mini-val" id="kpiAvgInvoices">0 টি</div>
+            </div>
+          </div>
+
+          <div class="kpi-mini-card">
+            <div class="kpi-mini-icon">🎯</div>
+            <div>
+              <div class="kpi-mini-title">অনুমোদন সাফল্যের হার</div>
+              <div class="kpi-mini-val" id="kpiApprovalRate" style="color: #0f766e;">100%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Worker Performance Matrix Table -->
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>কর্মীর নাম (Worker Name)</th>
+                <th>মোবাইল নম্বর</th>
+                <th>দায়িত্বপ্রাপ্ত সুপারভাইজার</th>
+                <th class="text-center">সম্পন্ন চালান</th>
+                <th class="text-right">মোট পিস</th>
+                <th class="text-right">মোট কার্টুন</th>
+                <th class="text-center">অনুমোদন স্থিতি</th>
+                <th class="text-center">পারফরম্যান্স রেটিং</th>
+                <th class="text-center">অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody id="workerPerformanceBody">
+              <tr><td colspan="9" class="text-center">কর্মী পারফরম্যান্স ডাটা লোড হচ্ছে...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -229,12 +321,30 @@
       </div>
     </div>
 
-    <!-- Recent Invoices Table -->
+    <!-- ========================================================================= -->
+    <!-- COMMERCIAL INVOICES LIST (WITH WORKER & SUPERVISOR ATTRIBUTION & FILTERS)  -->
+    <!-- ========================================================================= -->
     <div class="card" style="margin-top: 1.5rem;">
-      <div class="card-header">
+      <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
         <div class="card-title" id="invoicesTableTitle">📑 বাণিজ্যিক রপ্তানি চালান তালিকা (Commercial Invoices)</div>
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <input type="text" id="searchInvoice" placeholder="চালান / EXP নম্বর দিয়ে সার্চ..." class="form-control" style="width: 260px;">
+        
+        <!-- Multi-filter bar for Admin & Supervisor -->
+        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;" id="invoiceFilterBar">
+          <select id="filterSupervisorSelect" class="form-control" style="width: auto; font-size: 0.85rem; padding: 5px 8px; display: none;">
+            <option value="">-- সকল সুপারভাইজার --</option>
+          </select>
+
+          <select id="filterWorkerSelect" class="form-control" style="width: auto; font-size: 0.85rem; padding: 5px 8px; display: none;">
+            <option value="">-- সকল কর্মী --</option>
+          </select>
+
+          <select id="filterApprovalSelect" class="form-control" style="width: auto; font-size: 0.85rem; padding: 5px 8px;">
+            <option value="">-- সকল স্ট্যাটাস --</option>
+            <option value="APPROVED">অনুমোদিত (Approved)</option>
+            <option value="PENDING">অপেক্ষমাণ (Pending)</option>
+          </select>
+
+          <input type="text" id="searchInvoice" placeholder="চালান / EXP নম্বর দিয়ে সার্চ..." class="form-control" style="width: 220px; font-size: 0.85rem;">
         </div>
       </div>
       <div class="table-responsive">
@@ -245,6 +355,8 @@
               <th>তারিখ</th>
               <th>EXP নম্বর</th>
               <th>বায়ার / কনসাইনি</th>
+              <th id="thCreator">প্রস্তুতকারক কর্মী (Worker)</th>
+              <th id="thSupervisor">তদারককারী (Supervisor)</th>
               <th class="text-right">কার্টুন</th>
               <th class="text-right">মোট পিস</th>
               <th class="text-right col-revenue">মূল্য (USD)</th>
@@ -253,7 +365,7 @@
             </tr>
           </thead>
           <tbody id="invoicesTableBody">
-            <tr><td colspan="9" class="text-center">চালানের তথ্য লোড হচ্ছে...</td></tr>
+            <tr><td colspan="11" class="text-center">চালানের তথ্য লোড হচ্ছে...</td></tr>
           </tbody>
         </table>
       </div>

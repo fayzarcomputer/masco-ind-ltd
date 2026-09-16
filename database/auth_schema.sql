@@ -40,6 +40,30 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='approved_by') THEN
         ALTER TABLE invoices ADD COLUMN approved_by UUID REFERENCES users(id) ON DELETE SET NULL;
     END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='creator_name') THEN
+        ALTER TABLE invoices ADD COLUMN creator_name VARCHAR(150);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='creator_mobile') THEN
+        ALTER TABLE invoices ADD COLUMN creator_mobile VARCHAR(20);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='supervisor_name') THEN
+        ALTER TABLE invoices ADD COLUMN supervisor_name VARCHAR(150);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='supervisor_mobile') THEN
+        ALTER TABLE invoices ADD COLUMN supervisor_mobile VARCHAR(20);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='approved_by_name') THEN
+        ALTER TABLE invoices ADD COLUMN approved_by_name VARCHAR(150);
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='invoices' AND column_name='approval_date') THEN
+        ALTER TABLE invoices ADD COLUMN approval_date TIMESTAMPTZ;
+    END IF;
 END $$;
 
 -- 3. ROW LEVEL SECURITY (RLS) POLICIES FOR USERS TABLE

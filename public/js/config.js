@@ -160,7 +160,7 @@ const API = {
   },
 
   // ----------------------------------------------------------------------------
-  // 3. INVOICES API (WITH ROLE-BASED ACCESS CONTROL)
+  // 3. INVOICES API (WITH ROLE-BASED ACCESS CONTROL & AUDIT TRAIL)
   // ----------------------------------------------------------------------------
   getInvoices: async (params = {}) => {
     const currentUser = window.Auth ? window.Auth.getUser() : null;
@@ -171,14 +171,18 @@ const API = {
       // Role-based data filtering:
       if (currentUser) {
         if (currentUser.role === 'worker') {
-          // Worker sees ONLY invoices created by themselves
           url += `&created_by=eq.${currentUser.id}`;
         } else if (currentUser.role === 'supervisor') {
-          // Supervisor sees invoices of their assigned workers or tagged with supervisor_id
           url += `&supervisor_id=eq.${currentUser.id}`;
         }
       }
 
+      if (params.worker_id) {
+        url += `&created_by=eq.${params.worker_id}`;
+      }
+      if (params.supervisor_id) {
+        url += `&supervisor_id=eq.${params.supervisor_id}`;
+      }
       if (params.month) {
         url += `&invoice_date=gte.${params.month}-01&invoice_date=lte.${params.month}-31`;
       }
@@ -188,15 +192,35 @@ const API = {
 
       const res = await fetch(url, { headers: sbHeaders });
       if (res.ok) {
-        const data = await res.json();
+        let data = await res.json();
+        
+        // Enrich data with worker and supervisor snapshots if missing
+        const defaultUsers = window.Auth?.DEFAULT_USERS || [];
+        const allUsers = JSON.parse(localStorage.getItem('masco_users') || 'null') || defaultUsers;
+
+        data = data.map(inv => {
+          const creator = allUsers.find(u => u.id === inv.created_by);
+          const supervisor = allUsers.find(u => u.id === inv.supervisor_id);
+          return {
+            ...inv,
+            creator_name: inv.creator_name || (creator ? creator.name : 'অ্যাসাইনকৃত কর্মী'),
+            creator_mobile: inv.creator_mobile || (creator ? creator.mobile : '-'),
+            supervisor_name: inv.supervisor_name || (supervisor ? supervisor.name : '-'),
+            supervisor_mobile: inv.supervisor_mobile || (supervisor ? supervisor.mobile : '-')
+          };
+        });
+
         return { success: true, source: 'supabase', data };
       }
     } catch (e) {
       console.warn('Supabase invoices fetch failed:', e);
     }
 
-    // Local fallback with role filtering
+    // Local fallback with role filtering and worker enrichment
     let list = JSON.parse(localStorage.getItem('masco_invoices') || '[]');
+    const defaultUsers = window.Auth?.DEFAULT_USERS || [];
+    const allUsers = JSON.parse(localStorage.getItem('masco_users') || 'null') || defaultUsers;
+
     if (currentUser) {
       if (currentUser.role === 'worker') {
         list = list.filter(i => !i.created_by || i.created_by === currentUser.id);
@@ -204,10 +228,35 @@ const API = {
         list = list.filter(i => !i.supervisor_id || i.supervisor_id === currentUser.id);
       }
     }
+    if (params.worker_id) {
+      list = list.filter(i => i.created_by === params.worker_id);
+    }
+    if (params.supervisor_id) {
+      list = list.filter(i => i.supervisor_id === params.supervisor_id);
+    }
+    if (params.month) {
+      list = list.filter(i => i.invoice_date && i.invoice_date.startsWith(params.month));
+    }
+
+    list = list.map(inv => {
+      const creator = allUsers.find(u => u.id === inv.created_by);
+      const supervisor = allUsers.find(u => u.id === inv.supervisor_id);
+      return {
+        ...inv,
+        creator_name: inv.creator_name || (creator ? creator.name : 'অ্যাসাইনকৃত কর্মী'),
+        creator_mobile: inv.creator_mobile || (creator ? creator.mobile : '-'),
+        supervisor_name: inv.supervisor_name || (supervisor ? supervisor.name : '-'),
+        supervisor_mobile: inv.supervisor_mobile || (supervisor ? supervisor.mobile : '-')
+      };
+    });
+
     return { success: true, source: 'fallback', data: list };
   },
 
   getInvoiceById: async (id) => {
+    const defaultUsers = window.Auth?.DEFAULT_USERS || [];
+    const allUsers = JSON.parse(localStorage.getItem('masco_users') || 'null') || defaultUsers;
+
     try {
       const invRes = await fetch(`${SUPABASE_URL}/rest/v1/invoices?id=eq.${id}&select=*,clients(*)`, {
         headers: sbHeaders
@@ -222,6 +271,14 @@ const API = {
           if (itemsRes.ok) {
             invoice.invoice_items = await itemsRes.json();
           }
+
+          const creator = allUsers.find(u => u.id === invoice.created_by);
+          const supervisor = allUsers.find(u => u.id === invoice.supervisor_id);
+          invoice.creator_name = invoice.creator_name || (creator ? creator.name : 'অ্যাসাইনকৃত কর্মী');
+          invoice.creator_mobile = invoice.creator_mobile || (creator ? creator.mobile : '-');
+          invoice.supervisor_name = invoice.supervisor_name || (supervisor ? supervisor.name : '-');
+          invoice.supervisor_mobile = invoice.supervisor_mobile || (supervisor ? supervisor.mobile : '-');
+
           return { success: true, source: 'supabase', data: invoice };
         }
       }
@@ -230,12 +287,27 @@ const API = {
     }
     const list = JSON.parse(localStorage.getItem('masco_invoices') || '[]');
     const inv = list.find(i => i.id === id || i.invoice_no === id);
-    if (inv) return { success: true, source: 'fallback', data: inv };
+    if (inv) {
+      const creator = allUsers.find(u => u.id === inv.created_by);
+      const supervisor = allUsers.find(u => u.id === inv.supervisor_id);
+      inv.creator_name = inv.creator_name || (creator ? creator.name : 'অ্যাসাইনকৃত কর্মী');
+      inv.creator_mobile = inv.creator_mobile || (creator ? creator.mobile : '-');
+      inv.supervisor_name = inv.supervisor_name || (supervisor ? supervisor.name : '-');
+      inv.supervisor_mobile = inv.supervisor_mobile || (supervisor ? supervisor.mobile : '-');
+      return { success: true, source: 'fallback', data: inv };
+    }
     return { success: false, error: 'Invoice not found' };
   },
 
   createInvoice: async (data) => {
     const currentUser = window.Auth ? window.Auth.getUser() : null;
+    const defaultUsers = window.Auth?.DEFAULT_USERS || [];
+    const allUsers = JSON.parse(localStorage.getItem('masco_users') || 'null') || defaultUsers;
+
+    let supervisor = null;
+    if (currentUser?.supervisor_id) {
+      supervisor = allUsers.find(u => u.id === currentUser.supervisor_id);
+    }
 
     try {
       let total_carton = 0, total_pcs = 0, total_gw = 0, total_nw = 0, total_cbm = 0, total_amt = 0;
@@ -270,6 +342,8 @@ const API = {
           line_amount: parseFloat(lineTotal.toFixed(2))
         };
       });
+
+      const isManager = currentUser && (currentUser.role === 'admin' || currentUser.role === 'master_admin');
 
       const masterData = {
         invoice_no: data.invoice_no,
@@ -307,10 +381,17 @@ const API = {
         total_cbm: parseFloat(total_cbm.toFixed(3)),
         total_amount: parseFloat(total_amt.toFixed(2)),
         status: 'ISSUED',
-        // Attaching creator and supervisor
+        // Attaching creator and supervisor audit snapshots
         created_by: currentUser ? currentUser.id : null,
+        creator_name: currentUser ? currentUser.name : 'Unknown Worker',
+        creator_mobile: currentUser ? currentUser.mobile : '',
         supervisor_id: currentUser ? (currentUser.supervisor_id || (currentUser.role === 'supervisor' ? currentUser.id : null)) : null,
-        approval_status: (currentUser && (currentUser.role === 'admin' || currentUser.role === 'master_admin')) ? 'APPROVED' : 'PENDING'
+        supervisor_name: supervisor ? supervisor.name : (currentUser?.role === 'supervisor' ? currentUser.name : ''),
+        supervisor_mobile: supervisor ? supervisor.mobile : (currentUser?.role === 'supervisor' ? currentUser.mobile : ''),
+        approval_status: isManager ? 'APPROVED' : 'PENDING',
+        approved_by: isManager ? currentUser.id : null,
+        approved_by_name: isManager ? currentUser.name : null,
+        approval_date: isManager ? new Date().toISOString() : null
       };
 
       // 1. Insert Invoice
@@ -348,18 +429,31 @@ const API = {
 
   updateInvoiceApproval: async (id, approval_status) => {
     const currentUser = window.Auth ? window.Auth.getUser() : null;
+    const updates = {
+      approval_status: approval_status,
+      approved_by: currentUser ? currentUser.id : null,
+      approved_by_name: currentUser ? currentUser.name : 'অনুমোদনকারী কর্মকর্তা',
+      approval_date: new Date().toISOString()
+    };
+
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/invoices?id=eq.${id}`, {
         method: 'PATCH',
         headers: sbHeaders,
-        body: JSON.stringify({
-          approval_status: approval_status,
-          approved_by: currentUser ? currentUser.id : null
-        })
+        body: JSON.stringify(updates)
       });
       if (res.ok) return { success: true };
     } catch (e) {
       console.warn('Update invoice approval failed online:', e);
+    }
+
+    // Local fallback
+    const list = JSON.parse(localStorage.getItem('masco_invoices') || '[]');
+    const idx = list.findIndex(i => i.id === id);
+    if (idx !== -1) {
+      list[idx] = { ...list[idx], ...updates };
+      localStorage.setItem('masco_invoices', JSON.stringify(list));
+      return { success: true, source: 'fallback', data: list[idx] };
     }
     return { success: true, source: 'fallback' };
   },
@@ -458,6 +552,112 @@ const API = {
       monthly_summary: [],
       buyer_summary: []
     };
+  },
+
+  // ----------------------------------------------------------------------------
+  // 5. WORKER PERFORMANCE & MONTHLY PRODUCTIVITY ANALYTICS
+  // ----------------------------------------------------------------------------
+  getWorkerAnalytics: async (params = {}) => {
+    const currentUser = window.Auth ? window.Auth.getUser() : null;
+    try {
+      const [usersRes, invRes] = await Promise.all([
+        API.getUsers(),
+        API.getInvoices(params)
+      ]);
+
+      const users = usersRes.data || [];
+      const invoices = invRes.data || [];
+
+      // Filter workers: if supervisor, only assigned workers; if admin/master, all workers
+      let workers = users.filter(u => u.role === 'worker');
+      if (currentUser && currentUser.role === 'supervisor') {
+        workers = workers.filter(u => u.supervisor_id === currentUser.id);
+      }
+
+      const performanceList = workers.map(w => {
+        const sv = users.find(u => u.id === w.supervisor_id);
+        const svName = sv ? sv.name : (w.supervisor?.name || 'অ্যাসাইনকৃত');
+
+        // Filter invoices by this worker
+        const workerInvoices = invoices.filter(i => i.created_by === w.id);
+
+        let totalPcs = 0;
+        let totalCartons = 0;
+        let totalValue = 0;
+        let approvedCount = 0;
+        let pendingCount = 0;
+
+        workerInvoices.forEach(inv => {
+          totalPcs += Number(inv.total_pcs || 0);
+          totalCartons += Number(inv.total_carton || 0);
+          totalValue += Number(inv.total_amount || 0);
+          if (inv.approval_status === 'APPROVED') {
+            approvedCount++;
+          } else {
+            pendingCount++;
+          }
+        });
+
+        const totalInv = workerInvoices.length;
+        const approvalRate = totalInv > 0 ? Math.round((approvedCount / totalInv) * 100) : 100;
+
+        // Performance rating grade
+        let rating = 'নিয়মিত অগ্রগতি';
+        let ratingBadge = 'badge-draft';
+        if (totalPcs >= 1000 || totalInv >= 2) {
+          rating = '🌟 স্টার পারফর্মার';
+          ratingBadge = 'badge-issued';
+        } else if (totalPcs >= 500 || totalInv >= 1) {
+          rating = '🟢 দক্ষ কর্মী';
+          ratingBadge = 'badge-approved';
+        }
+
+        return {
+          worker_id: w.id,
+          name: w.name,
+          mobile: w.mobile,
+          department: w.department || 'Data Entry & Packing',
+          supervisor_id: w.supervisor_id,
+          supervisor_name: svName,
+          is_active: w.is_active !== false,
+          total_invoices: totalInv,
+          total_pcs: totalPcs,
+          total_cartons: totalCartons,
+          total_value_usd: totalValue,
+          approved_count: approvedCount,
+          pending_count: pendingCount,
+          approval_rate: approvalRate,
+          rating,
+          rating_badge: ratingBadge
+        };
+      });
+
+      // Sort by total pcs descending
+      performanceList.sort((a, b) => b.total_pcs - a.total_pcs);
+
+      const topPerformer = performanceList.length > 0 && performanceList[0].total_invoices > 0 ? performanceList[0] : null;
+      const totalTeamPcs = performanceList.reduce((sum, w) => sum + w.total_pcs, 0);
+      const totalTeamCartons = performanceList.reduce((sum, w) => sum + w.total_cartons, 0);
+      const totalTeamInvoices = performanceList.reduce((sum, w) => sum + w.total_invoices, 0);
+      const activeWorkersCount = performanceList.filter(w => w.total_invoices > 0).length;
+
+      return {
+        success: true,
+        data: performanceList,
+        top_performer: topPerformer,
+        summary: {
+          total_workers: workers.length,
+          active_workers: activeWorkersCount,
+          total_invoices: totalTeamInvoices,
+          total_pcs: totalTeamPcs,
+          total_cartons: totalTeamCartons,
+          avg_invoices_per_worker: workers.length > 0 ? (totalTeamInvoices / workers.length).toFixed(1) : 0
+        }
+      };
+    } catch (err) {
+      console.error('Error computing worker analytics:', err);
+      return { success: false, data: [] };
+    }
   }
 };
 

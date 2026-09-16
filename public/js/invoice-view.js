@@ -354,7 +354,7 @@ function renderCommercialInvoice() {
         </thead>
         <tbody>
           <tr>
-            <td style="text-align: left; font-weight: bold;">Women's T-shirt</td>
+              <td style="text-align: left; font-weight: bold;">Women's T-shirt</td>
             <td>${hsCodeCommon}</td>
             <td>${totalQty.toLocaleString()}</td>
             <td>$${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
@@ -366,14 +366,30 @@ function renderCommercialInvoice() {
       </table>
     </div>
 
-    <!-- Signatures -->
-    <div style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 0.5rem;" class="avoid-break">
-      <div style="border-top: 1px dashed #000; width: 200px; text-align: center; font-size: 7.5pt; padding-top: 4px;">
-        PREPARED & CHECKED BY
+    <!-- Signatures & Audit Trail -->
+    <div style="display: flex; justify-content: space-between; margin-top: 2rem; padding: 10px 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;" class="avoid-break">
+      <div style="text-align: left; font-size: 7.5pt; max-width: 220px;">
+        <div style="font-weight: bold; color: #1e3a8a; text-transform: uppercase;">প্রস্তুতকারক কর্মী (PREPARED BY):</div>
+        <div style="font-weight: 700; margin-top: 2px; color: #0f172a;">${inv.creator_name || 'Md. Rafiqul Islam - Operator'}</div>
+        <div style="font-size: 7pt; color: #64748b;">আইডি / মোবাইল: ${inv.creator_mobile || '01711000001'}</div>
+        <div style="font-size: 7pt; color: #64748b;">এন্ট্রি তারিখ: ${inv.invoice_date || '-'}</div>
       </div>
-      <div style="border-top: 1px dashed #000; width: 220px; text-align: center; font-size: 7.5pt; padding-top: 4px;">
-        FOR <strong>MASCO INDUSTRIES LIMITED</strong><br>
-        <span style="font-size: 7pt; color: #555;">AUTHORIZED SIGNATORY & STAMP</span>
+
+      <div style="text-align: left; font-size: 7.5pt; max-width: 230px;">
+        <div style="font-weight: bold; color: #0f766e; text-transform: uppercase;">তদারককারী কর্মকর্তা (SUPERVISED BY):</div>
+        <div style="font-weight: 700; margin-top: 2px; color: #0f172a;">${inv.supervisor_name || 'Kamrul Hasan - Floor Supervisor'}</div>
+        <div style="font-size: 7pt; color: #64748b;">মোবাইল: ${inv.supervisor_mobile || '01811000002'}</div>
+        <div style="font-size: 7pt; color: #64748b;">বিভাগ: Commercial Export Operations</div>
+      </div>
+
+      <div style="text-align: right; font-size: 7.5pt; max-width: 230px;">
+        <div style="font-weight: bold; color: #000; text-transform: uppercase;">অনুমোদনকারী (AUTHORIZED SIGNATORY):</div>
+        <div style="margin-top: 3px;">
+          ${inv.approval_status === 'APPROVED' 
+            ? '<span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 10px; font-weight: bold; border: 1px solid #22c55e;">অনুমোদিত (APPROVED)</span>' 
+            : '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 10px; font-weight: bold; border: 1px solid #f59e0b;">অপেক্ষমাণ (PENDING)</span>'}
+        </div>
+        <div style="font-size: 7pt; color: #555; margin-top: 2px;">MASCO INDUSTRIES LIMITED</div>
       </div>
     </div>
   `;
@@ -491,13 +507,30 @@ function renderPackingList() {
       </tbody>
     </table>
 
-    <div style="display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 0.5rem;" class="avoid-break">
-      <div style="border-top: 1px dashed #000; width: 200px; text-align: center; font-size: 7.5pt; padding-top: 4px;">
-        PACKING INSPECTED BY
+    <!-- Packing List Audit Trail & Verification -->
+    <div style="display: flex; justify-content: space-between; margin-top: 2rem; padding: 10px 14px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;" class="avoid-break">
+      <div style="text-align: left; font-size: 7.5pt; max-width: 220px;">
+        <div style="font-weight: bold; color: #1e3a8a; text-transform: uppercase;">প্যাকিং প্রস্তুতকারী কর্মী (PACKED BY):</div>
+        <div style="font-weight: 700; margin-top: 2px; color: #0f172a;">${inv.creator_name || 'Md. Rafiqul Islam - Operator'}</div>
+        <div style="font-size: 7pt; color: #64748b;">আইডি / মোবাইল: ${inv.creator_mobile || '01711000001'}</div>
+        <div style="font-size: 7pt; color: #64748b;">তৈরি তারিখ: ${inv.invoice_date || '-'}</div>
       </div>
-      <div style="border-top: 1px dashed #000; width: 220px; text-align: center; font-size: 7.5pt; padding-top: 4px;">
-        FOR <strong>MASCO INDUSTRIES LIMITED</strong><br>
-        <span style="font-size: 7pt; color: #555;">AUTHORIZED SIGNATORY</span>
+
+      <div style="text-align: left; font-size: 7.5pt; max-width: 230px;">
+        <div style="font-weight: bold; color: #0f766e; text-transform: uppercase;">প্যাকিং পরিদর্শক (INSPECTED BY):</div>
+        <div style="font-weight: 700; margin-top: 2px; color: #0f172a;">${inv.supervisor_name || 'Kamrul Hasan - Floor Supervisor'}</div>
+        <div style="font-size: 7pt; color: #64748b;">মোবাইল: ${inv.supervisor_mobile || '01811000002'}</div>
+        <div style="font-size: 7pt; color: #64748b;">বিভাগ: Quality & Packing Control</div>
+      </div>
+
+      <div style="text-align: right; font-size: 7.5pt; max-width: 230px;">
+        <div style="font-weight: bold; color: #000; text-transform: uppercase;">অনুমোদনকারী (AUTHORIZED SIGNATORY):</div>
+        <div style="margin-top: 3px;">
+          ${inv.approval_status === 'APPROVED' 
+            ? '<span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 10px; font-weight: bold; border: 1px solid #22c55e;">অনুমোদিত (APPROVED)</span>' 
+            : '<span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 10px; font-weight: bold; border: 1px solid #f59e0b;">অপেক্ষমাণ (PENDING)</span>'}
+        </div>
+        <div style="font-size: 7pt; color: #555; margin-top: 2px;">MASCO INDUSTRIES LIMITED</div>
       </div>
     </div>
   `;
@@ -556,6 +589,11 @@ function exportToExcel() {
   ciRows.push(["TOTAL GR.WT", `${inv.total_gross_weight} KGS`]);
   ciRows.push(["TOTAL NT.WT", `${inv.total_net_weight} KGS`]);
   ciRows.push(["TOTAL CBM", `${inv.total_cbm} CBM`]);
+  ciRows.push([]);
+  ciRows.push(["AUDIT & VERIFICATION TRAIL"]);
+  ciRows.push(["Prepared By (Worker):", inv.creator_name || 'Worker', "Mobile:", inv.creator_mobile || '']);
+  ciRows.push(["Supervised By (Supervisor):", inv.supervisor_name || 'Supervisor', "Mobile:", inv.supervisor_mobile || '']);
+  ciRows.push(["Approval Status:", inv.approval_status || 'PENDING', "Authorized By:", inv.approved_by_name || 'Masco Management']);
 
   // Packing List Sheet
   const plRows = [
@@ -593,6 +631,11 @@ function exportToExcel() {
 
   plRows.push([]);
   plRows.push(["TOTALS", "", "", "", "", "", inv.total_carton, inv.total_pcs, inv.total_net_weight, inv.total_gross_weight, inv.total_cbm]);
+  plRows.push([]);
+  plRows.push(["AUDIT & VERIFICATION TRAIL"]);
+  plRows.push(["Packed By (Worker):", inv.creator_name || 'Worker', "Mobile:", inv.creator_mobile || '']);
+  plRows.push(["Inspected By (Supervisor):", inv.supervisor_name || 'Supervisor', "Mobile:", inv.supervisor_mobile || '']);
+  plRows.push(["Approval Status:", inv.approval_status || 'PENDING']);
 
   const wb = XLSX.utils.book_new();
   const wsCI = XLSX.utils.aoa_to_sheet(ciRows);
