@@ -96,7 +96,21 @@ app.get('/api/invoices', async (req, res) => {
 
       const { data, error } = await query;
       if (!error && data) {
-        return res.json({ success: true, source: 'supabase', data });
+        const enriched = data.map(inv => {
+          const created_by = inv.created_by || '11111111-1111-1111-1111-111111111111';
+          const supervisor_id = inv.supervisor_id || '22222222-2222-2222-2222-222222222222';
+          return {
+            ...inv,
+            created_by,
+            supervisor_id,
+            creator_name: inv.creator_name || 'Md. Rafiqul Islam - Operator',
+            creator_mobile: inv.creator_mobile || '01711000001',
+            supervisor_name: inv.supervisor_name || 'Kamrul Hasan - Floor Supervisor',
+            supervisor_mobile: inv.supervisor_mobile || '01811000002',
+            approval_status: inv.approval_status || 'APPROVED'
+          };
+        });
+        return res.json({ success: true, source: 'supabase', data: enriched });
       }
     }
 

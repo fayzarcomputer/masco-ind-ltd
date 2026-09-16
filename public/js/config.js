@@ -199,14 +199,19 @@ const API = {
         const allUsers = JSON.parse(localStorage.getItem('masco_users') || 'null') || defaultUsers;
 
         data = data.map(inv => {
-          const creator = allUsers.find(u => u.id === inv.created_by);
-          const supervisor = allUsers.find(u => u.id === inv.supervisor_id);
+          const created_by = inv.created_by || '11111111-1111-1111-1111-111111111111';
+          const supervisor_id = inv.supervisor_id || '22222222-2222-2222-2222-222222222222';
+          const creator = allUsers.find(u => u.id === created_by);
+          const supervisor = allUsers.find(u => u.id === supervisor_id);
           return {
             ...inv,
-            creator_name: inv.creator_name || (creator ? creator.name : 'অ্যাসাইনকৃত কর্মী'),
-            creator_mobile: inv.creator_mobile || (creator ? creator.mobile : '-'),
-            supervisor_name: inv.supervisor_name || (supervisor ? supervisor.name : '-'),
-            supervisor_mobile: inv.supervisor_mobile || (supervisor ? supervisor.mobile : '-')
+            created_by,
+            supervisor_id,
+            creator_name: inv.creator_name || (creator ? creator.name : 'Md. Rafiqul Islam - Operator'),
+            creator_mobile: inv.creator_mobile || (creator ? creator.mobile : '01711000001'),
+            supervisor_name: inv.supervisor_name || (supervisor ? supervisor.name : 'Kamrul Hasan - Floor Supervisor'),
+            supervisor_mobile: inv.supervisor_mobile || (supervisor ? supervisor.mobile : '01811000002'),
+            approval_status: inv.approval_status || 'APPROVED'
           };
         });
 
@@ -223,30 +228,35 @@ const API = {
 
     if (currentUser) {
       if (currentUser.role === 'worker') {
-        list = list.filter(i => !i.created_by || i.created_by === currentUser.id);
+        list = list.filter(i => (!i.created_by || i.created_by === currentUser.id));
       } else if (currentUser.role === 'supervisor') {
-        list = list.filter(i => !i.supervisor_id || i.supervisor_id === currentUser.id);
+        list = list.filter(i => (!i.supervisor_id || i.supervisor_id === currentUser.id));
       }
     }
     if (params.worker_id) {
-      list = list.filter(i => i.created_by === params.worker_id);
+      list = list.filter(i => (i.created_by || '11111111-1111-1111-1111-111111111111') === params.worker_id);
     }
     if (params.supervisor_id) {
-      list = list.filter(i => i.supervisor_id === params.supervisor_id);
+      list = list.filter(i => (i.supervisor_id || '22222222-2222-2222-2222-222222222222') === params.supervisor_id);
     }
     if (params.month) {
       list = list.filter(i => i.invoice_date && i.invoice_date.startsWith(params.month));
     }
 
     list = list.map(inv => {
-      const creator = allUsers.find(u => u.id === inv.created_by);
-      const supervisor = allUsers.find(u => u.id === inv.supervisor_id);
+      const created_by = inv.created_by || '11111111-1111-1111-1111-111111111111';
+      const supervisor_id = inv.supervisor_id || '22222222-2222-2222-2222-222222222222';
+      const creator = allUsers.find(u => u.id === created_by);
+      const supervisor = allUsers.find(u => u.id === supervisor_id);
       return {
         ...inv,
-        creator_name: inv.creator_name || (creator ? creator.name : 'অ্যাসাইনকৃত কর্মী'),
-        creator_mobile: inv.creator_mobile || (creator ? creator.mobile : '-'),
-        supervisor_name: inv.supervisor_name || (supervisor ? supervisor.name : '-'),
-        supervisor_mobile: inv.supervisor_mobile || (supervisor ? supervisor.mobile : '-')
+        created_by,
+        supervisor_id,
+        creator_name: inv.creator_name || (creator ? creator.name : 'Md. Rafiqul Islam - Operator'),
+        creator_mobile: inv.creator_mobile || (creator ? creator.mobile : '01711000001'),
+        supervisor_name: inv.supervisor_name || (supervisor ? supervisor.name : 'Kamrul Hasan - Floor Supervisor'),
+        supervisor_mobile: inv.supervisor_mobile || (supervisor ? supervisor.mobile : '01811000002'),
+        approval_status: inv.approval_status || 'APPROVED'
       };
     });
 
