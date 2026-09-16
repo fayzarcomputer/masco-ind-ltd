@@ -150,7 +150,7 @@ INSERT INTO clients (
     id, applicant_name, office_address, country, notify_party,
     buyer_bank_name, buyer_bank_branch, buyer_bank_swift, buyer_bank_account
 ) VALUES (
-    'm1111111-1111-1111-1111-111111111111',
+    '11111111-1111-1111-1111-111111111111',
     'MALACCA SOURCING PTE. LTD.,',
     '6 SHENTON WAY, #18-10, OUE DOWNTOWN, SINGAPORE 068809',
     'SINGAPORE',
@@ -180,7 +180,7 @@ INSERT INTO invoices (
     '2026-09-12',
     'MS26/5002-SS27',
     '2026-04-10',
-    'm1111111-1111-1111-1111-111111111111',
+    '11111111-1111-1111-1111-111111111111',
     'MASCO INDUSTRIES LIMITED',
     '221-223, KHARTAIL, SHATAISH ROAD, TONGI, GAZIPUR-1712, BANGLADESH',
     'Arhams (5th Floor), Plot-79, Sector-07, Dhaka-Mymensingh Highway, Uttara, Dhaka-1230',

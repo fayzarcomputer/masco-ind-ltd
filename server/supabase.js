@@ -24,7 +24,7 @@ if (supabaseUrl && supabaseKey && !supabaseUrl.includes('your-project-ref')) {
 export const mockDb = {
   clients: [
     {
-      id: 'm1111111-1111-1111-1111-111111111111',
+      id: '11111111-1111-1111-1111-111111111111',
       applicant_name: 'MALACCA SOURCING PTE. LTD.,',
       office_address: '6 SHENTON WAY, #18-10, OUE DOWNTOWN, SINGAPORE 068809',
       country: 'SINGAPORE',
@@ -45,7 +45,7 @@ export const mockDb = {
       exp_date: '2026-09-12',
       sc_no: 'MS26/5002-SS27',
       sc_date: '2026-04-10',
-      client_id: 'm1111111-1111-1111-1111-111111111111',
+      client_id: '11111111-1111-1111-1111-111111111111',
       exporter_name: 'MASCO INDUSTRIES LIMITED',
       factory_address: '221-223, KHARTAIL, SHATAISH ROAD, TONGI, GAZIPUR-1712, BANGLADESH',
       corporate_office: 'Arhams (5th Floor), Plot-79, Sector-07, Dhaka-Mymensingh Highway, Uttara, Dhaka-1230',
